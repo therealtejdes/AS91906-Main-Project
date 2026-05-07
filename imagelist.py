@@ -19,7 +19,6 @@ class ImageList():
     images = property(get_images, None, None)
 
 
-
 # testing
 if __name__ == "__main__":
     pygame.init()
@@ -53,7 +52,7 @@ if __name__ == "__main__":
             count +=1
         
         
-        
+    
 
         pygame.display.flip()
 

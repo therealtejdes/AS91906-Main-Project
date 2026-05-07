@@ -6,7 +6,6 @@ import time
 
 class MySprite():
     def __init__(self, x, y, w, h, images, screen):
-        DEBUG = 1
         white = (188, 227, 199) #This is a tuple (Snake Variable)
         gold = (255, 215, 0) #(Token variable)
         black = (37, 37, 37) #(For the score alongside other inputs)
@@ -166,6 +165,7 @@ if __name__ == "__main__":
     TEST_H=64
     TEST_FILES = "images\\test\\test"
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.RESIZABLE)
+    pygame.display.set_caption('SNAKED')
     # Pygame has been initialised. 
 
     image_rect= pygame.Rect(TEST_H, TEST_W, TEST_X, TEST_Y)
@@ -190,12 +190,6 @@ if __name__ == "__main__":
 
         # This section of the code draws, animates and 
 
-        for sprite in spritelist:
-            sprite.draw
-            sprite.animate
-            sprite.move(1, 0, 1)
-
-            
 
             pygame.display.flip()
 

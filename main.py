@@ -1,5 +1,6 @@
 import pygame
 import json
+import time
 from imagelist import ImageList
 from mysprite import MySprite
 pygame.init()
