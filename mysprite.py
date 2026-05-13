@@ -138,11 +138,14 @@ class MySprite():
         # If we are resetting the animation 
             self._current_frame = self._start_frame
         else:
-            if time.time()> self._next_frame:
+            if time.time() > self._next_frame:
                 # go to the next frame 
-                pass
-
-        self_next_frame = self._next_frame +self._delay
+                if self._current_frame == self._end_frame:
+                    if self._repeat:
+                        self._current_frame = self._start_frame
+                else:
+                    self._current_frame += 1
+                self_next_frame = self._next_frame + self._delay
         # This shows that the next frame will pop up 
 
         
@@ -156,7 +159,7 @@ class MySprite():
 
 # TESTING CODE
 if __name__ == "__main__":
-    pygame.init()
+
     SCREEN_WIDTH = 640
     SCREEN_HEIGHT = 480
     TEST_X=50
@@ -164,34 +167,50 @@ if __name__ == "__main__":
     TEST_W=64
     TEST_H=64
     TEST_FILES = "images\\test\\test"
+    
+    # Pygame has been initialised.
+    pygame.init()
+    # now the window is being created
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.RESIZABLE)
-    pygame.display.set_caption('SNAKED')
-    # Pygame has been initialised. 
 
-    image_rect= pygame.Rect(TEST_H, TEST_W, TEST_X, TEST_Y)
-    image_obj = ImageList("images\\test\\test", 64, 64)
+    # creating a pygame rectangle object
+    # image_rect= pygame.Rect(TEST_H, TEST_W, TEST_X, TEST_Y)
 
     test_imagelist = ImageList(TEST_FILES, TEST_W, TEST_H)
 
-    sprite1 = MySprite(TEST_X, TEST_Y, TEST_H, TEST_W)
-
     spritelist = []
-    spritelist.append(MySprite(TEST_X, TEST_Y, TEST_H, TEST_W, image_obj, screen))
-    spritelist [-1].set_animation(0, 3, 0.1, True)
-    spritelist.append(MySprite, TEST_X+TEST_W, TEST_Y, TEST_W, TEST_H, image_obj, screen)
+    # This projects 5 images on the screen
+    for count in range(5):
+    # "append" will add the class and required components listed in the classes values
+    #The X and W are combined so that the images can be shown in ascending order
+        spritelist.append( MySprite(TEST_X+(TEST_W*count), TEST_Y, TEST_W, TEST_H, test_imagelist, screen) )
+        #This sets the animation and how it moves
+        spritelist [-1].set_animation(1, 3, 1, True)
 
     # Loop for while not qutting
-
     quit_game = False
     while not quit_game:
+        # checking the events 
+        # This for loop walks through the list
         for event in pygame.event.get():
+            # checking for quit event
             if event.type == pygame.QUIT:
                 quit_game = True
 
-        # This section of the code draws, animates and 
+        
+
+        # clear the screen
+        screen.fill(pygame.Color('blue'))
 
 
-            pygame.display.flip()
+        # This section of the code draws and animates
+        for sprite in spritelist:
+            # will now draw the sprite
+            sprite.draw() 
+            # aniomate
+            sprite.animate()
+
+        pygame.display.flip()
 
 
     pygame.quit()
