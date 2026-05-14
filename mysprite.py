@@ -113,7 +113,7 @@ class MySprite():
         else:
             return True
         
-    # Animation cod 
+    # Animation code
     def set_animation(self, start_frame, end_frame=0, delay=0, repeat=1):
         if start_frame >=0 and start_frame < len(self._images.images):
             self._start_frame = start_frame
@@ -141,6 +141,7 @@ class MySprite():
             if time.time() > self._next_frame:
                 # go to the next frame 
                 if self._current_frame == self._end_frame:
+                    # checks if the 
                     if self._repeat:
                         self._current_frame = self._start_frame
                 else:
@@ -159,19 +160,32 @@ class MySprite():
 
 # TESTING CODE
 if __name__ == "__main__":
-
+    # labels for the components of the screen
+    # Logical resolutions defined
     SCREEN_WIDTH = 640
     SCREEN_HEIGHT = 480
     TEST_X=50
     TEST_Y=50
     TEST_W=64
     TEST_H=64
+    # will add images that are in the test
     TEST_FILES = "images\\test\\test"
     
     # Pygame has been initialised.
     pygame.init()
     # now the window is being created
-    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.RESIZABLE)
+    # The pygame module can be scaled 
+    # vsync= 1 avoids tearing
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),
+    pygame.SCALED | pygame.RESIZABLE, vsync=1)
+
+    running = True
+    while running:
+        # Draw everything as if the screen is tiny (640x480)
+        # Pygame handles the upscaling to the users actual window size automatically
+        pygame.display.flip()
+
+
 
     # creating a pygame rectangle object
     # image_rect= pygame.Rect(TEST_H, TEST_W, TEST_X, TEST_Y)
@@ -180,6 +194,7 @@ if __name__ == "__main__":
 
     spritelist = []
     # This projects 5 images on the screen
+    # done so that the append code doesn't have to be repeated
     for count in range(5):
     # "append" will add the class and required components listed in the classes values
     #The X and W are combined so that the images can be shown in ascending order
