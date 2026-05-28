@@ -173,19 +173,8 @@ if __name__ == "__main__":
     
     # Pygame has been initialised.
     pygame.init()
-    # now the window is being created
-    # The pygame module can be scaled 
-    # vsync= 1 avoids tearing
-    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),
-    pygame.SCALED | pygame.RESIZABLE, vsync=1)
-
-    running = True
-    while running:
-        # Draw everything as if the screen is tiny (640x480)
-        # Pygame handles the upscaling to the users actual window size automatically
-        pygame.display.flip()
-
-
+   
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.RESIZABLE)
 
     # creating a pygame rectangle object
     # image_rect= pygame.Rect(TEST_H, TEST_W, TEST_X, TEST_Y)

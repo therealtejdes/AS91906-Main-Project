@@ -1,5 +1,7 @@
 #defaults
 import json
+import pygame
+import time
 
 DEFAULTS = {"brightness": 100
 
