@@ -17,6 +17,12 @@ SCREEN_HEIGHT = 600
 # set_mode sets the mode of the screen to the dimensions previously defined
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT)) #avoids the usage of magic numbers
 
+# Logistical values for scaling
+#constants updated for scaling:
+# target base resolution
+BASE_WIDTH = 800
+BASE_HEIGHT = 600 
+
 # Logistical values for my buttons
 # These values remain constant for all buttons
 # all buttons will be featured on the main menu
@@ -49,6 +55,8 @@ WHITE = (255, 255, 255)
 BLUE = (0, 0, 255) 
 MAROON = (128, 0, 0) # These will be changed as the colors for my code will be different
 
+# pygame clock (running)
+clock = pygame.time.Clock()
 #since Imagelist and Mysprite are already defined, no need to produce classes for them
 # Menu class starts here
 
@@ -56,44 +64,69 @@ class Menu():
     def __innit__(self): # "self" makes sure that the class wont be touched
         # self._ values start here:
         # tracker variable defined in order to spearate the main and sub menu
-        self.state = "menu"
-        
+        self.state == "menu"
+        # scaled code
+        self.scale_x = SCREEN_WIDTH / BASE_WIDTH
+        self.scale_y = SCREEN_HEIGHT / BASE_HEIGHT
+        # images to be scaled to screen 
+        self.scale_factory_x = int(FACTORY_IMAGE_WIDTH * self.scale_x)
+        self.scale_factory_y = int(FACTORY_IMAGE_HEIGHT * self.scale_y)
         # taking from the imported image list
         # this produces the image, coded form image list
-        # this image has 200 x 200p dimensions and has a color
+        # this image has dimensions and color
         self.test_image_factory = ImageList(FACTORY_IMAGE_WIDTH, FACTORY_IMAGE_HEIGHT, FACTORY_IMAGE_COLOR) # since red has been defined, name can just be stated
         # coordinates of the defined sprite that will be taken from mysprite
         # the test image will extract this from the image list 
         self.sprite = MySprite(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, self.test_image_factory)
         self.sprite_group = pygame.sprite.Group(self.sprite)
-        # the sprte has been put into a container groups
         # theis makes importing/exporting and drawing the sprite much easier 
 
-        # the definition structure for my three buttons
-        # My code will have three distinct buttons
-        # the magic number values will be swapped out with the previously defined values
+        # list for main buttons
         self.buttons = [
-            Button("START", BUTTON_CENTER, 200, BUTTON_WIDTH, BUTTON_HEIGHT, lambda: self.set_state("start")),
-            Button("HIGH SCORE", BUTTON_CENTER, 280, BUTTON_WIDTH, BUTTON_HEIGHT, lambda: self.set_state("high_score")),
-            Button("SETTINGS", BUTTON_CENTER, 360, BUTTON_WIDTH, BUTTON_HEIGHT, lambda: self.set_state("settings"))
+             Button("START", int(BUTTON_CENTER * self.scale_x), 
+                   # the center dimension is now scaled
+                   int(200 * self.scale_x), 
+                   # width of the "START" button is now scaled to the screens width
+                   int(BUTTON_WIDTH * self.scale_y),
+                   # height of the "START" button is now scaled to the screens heght
+                   int (BUTTON_HEIGHT * self.scale_x), 
+                   lambda: self.set_state("start")),
+
+        # process repeated for other buttons
+            # High score button
+            Button("HIGH SCORE", int(BUTTON_CENTER * self.scale_x),
+                   # center dimension of the "High Score" button is now scaled  
+                   int(280 * self.scale_x), 
+                   int(BUTTON_WIDTH * self.scale_y),
+                   int(BUTTON_HEIGHT * self.scale_x), 
+                   lambda: self.set_state("high_score")), 
+
+            # Settings Button
+            Button("SETTINGS", int(BUTTON_CENTER * self.scale_x), 
+                   int(360 * self.scale_x), 
+                   int(BUTTON_WIDTH * self.scale_x), 
+                   int(BUTTON_HEIGHT * self.scale_y), 
+                   lambda: self.set_state("settings"))
         ]
         # the lambda code is an incline shortcut function
-        # when the button is pressed (mentioned in button class), its call back is triggered and 
-        # self_set_state runs as it's new string
-        # a separate button will be created in order to return back to the menu
-
+        # when the button is pressed (mentioned in button class), its call back is triggered
+      
         # The back button, for returning back to home menu
-        # The code for this will follow the same structure as previous three buttons 
+        # adds the width 
         # A back button for the sub-screens
-        self.back_button = Button("Back to Menu", BUTTON_X, BUTTON_Y, BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT lambda: self.set_state("menu"))
-        # usage of magic numebers avoided
+        # also to be sclaled
+        self.back_button = Button("Back to Menu", int(BUTTON_X + self.scale_x), 
+        int(BUTTON_Y * self.scale_y), 
+        int(BACK_BUTTON_WIDTH * self.scale_w), 
+        int(BACK_BUTTON_HEIGHT * self.scale_y), 
+        lambda: self.set_state("menu"))
 
 
     def set_state(self, new_state):
         # updates the current screen variable when called by either button press
         self.state = new_state
 
-    # This definition handles incoming inputs, in this case if/when the buttons are pressed
+    # definition handles incoming inputs, in this case if/when the buttons are pressed
     def handle_events(self, event):
         # click event will be passed down through all three main buttons
         if self.state == "menu":
@@ -102,6 +135,110 @@ class Menu():
         # the click will only be passed down to the back button
         else:
             self.back_button.handle_event(event)
+
+ # beggining of running the calculations
+    # mouse calculations are run
+    def update(self): # constants within the definition defined. 
+        mouse_pos = pygame.mouse.get_pos() #with the usage of pygame module. finds the x and y coordinates of mouse
+        # if on main menu, the 3 buttons will change colors if mouse is hovering over them
+        if self.state == "menu":
+            for button in self.buttons:
+                button.check_hover(mouse_pos)
+        else:
+            self.back_button.check_hover(mouse_pos)
+            # If hovered over "start", the mysprite instance is updated
+            if self.state == "start":
+                self.sprite_group.update() # mysprite updated using the group function
+
+    # Screen Grpahics rendering definiton
+    def draw(self, surface):
+        # surface.fill controls the canvas of the screen 
+        surface.fill(MAROON) #paints the entire canvas in dark grey
+        
+        # font/blit loop
+        # If the main menu has been opened
+        if self.state == "menu":
+            # "main menu string has become an image suface"
+            # this will be the title that has been drawn above gameplay 
+            title_surf = pygame.font.render("SNAKED", True, MAROON)
+            # "screen.blit" copies the rendered text onto the center of the screen
+            surface.blit(title_surf, (SCREEN_WIDTH // 2 - title_surf.get_width() // 2, 100)) #screen width divided by two
+           # the class "button" that has been mentioned in the self.button list
+            for button in self.buttons:
+                # arranges to draw the three buttons on the screen 
+                # this is done by the .draw() function
+                button.draw(surface)
+                
+        # if the menu state switches to the "start" screen:
+        elif self.state == "start":
+            # Once "START" is clicked, this condition becomes true
+            # this initializes the next four lines of code
+            # this will be the title that has been drawn above
+            title_surf = pygame.font.render("SNAKED", True, WHITE) # font engine converts the text "SNAKED" into an image surface
+            # blit takes the defined title_surf and puts it on the main window canvas
+            # the coordinates specifies 200 pixels from the top left 
+            # AND the 25 pixels downwards
+            surface.blit(title_surf, (200, 25))
+            # sprites postion is updated/viewed
+            self.sprite_group.draw(surface)
+            # draw method for the back button
+            # using the back buttons coordinates, the background rectangle is rendered
+            # #Back to menu text is overlayed on the screen"
+            # the user can escape the screen and return to the main menu
+            self.back_button.draw(surface)
+
+        # process is repeated for the other buttons
+
+        # if the user switches the menu state to the "High_Score" screen    
+        elif self.state == "high_score":
+            title_surf = pygame.font.render("CURRENT USER HIGH SCORE", True, WHITE) #font engine converts the text into an image surface
+            surface.blit(title_surf, (200, 25))
+            self.sprite_group.draw(surface)
+            self.back_button.draw(surface)
+
+        # if the user switches menu state to the "Settings" screen    
+        elif self.state == "settings":
+            title_surf = pygame.font.render("USER SETTINGS", True, WHITE)
+            surface.blit(title_surf, (200, 25))
+            self.sprite_group.draw(surface)
+            self.back_button.draw(surface)
+# class ends here
+
+# The main loop for the menu starts here
+# this is not apart of the class
+menu_system = Menu()
+# boolian control variable establishing 
+# initates the main game loop keeping the application open
+running = True
+while running:
+    for event in pygame.event.get():
+        # if the close box is clicked on the window
+        if event.type == pygame.QUIT:
+            # the running control is false
+            running = False
+        # "pygame.VIDEORESIZE" is triggered when:
+        # the main window is dragged out 
+        elif event.type == pygame.VIDEORESIZE:
+            # both events are variables that the pygame module already creates
+            # this is done so that the numbers the pygame is running is being coded into
+            # the pygame.VIDEORESIZE, hence is the purpose of this function.
+            menu_system.handle_resize(event.w, event.h)
+        menu_system.handle_events(event)
+    # system loop tick components in order are executed
+    menu_system.update()
+    # once updated, the required coordinates will be plotted to surface canvas frame
+    menu_system.draw(screen)
+
+    # the flip function swaps the hidden drawn layer to the visible screen layer
+    # coded to show the now updated graphics of the screen 
+    pygame.display.flip()
+    # execution is paused briefly as the screen is set to 60 frames per second
+    clock.tick(60)
+
+# signals the end of all pygame modules
+pygame.quit()
+# ensures that the game closes down without freezzing 
+sys.exit()
 
 
 
