@@ -1,5 +1,6 @@
 from os.path import exists
 import pygame
+import time
 
 # This classes job is to load images
 # This is so that this can be used for multiple sprites
@@ -7,7 +8,7 @@ class ImageList():
     def __init__(self, filename, width, height):
         self._images=[] 
         count = 0        
-        while exists(filename+str(count)+ '.jpg'):
+        while exists(filename + str(count)+ '.jpg'):
             image = pygame.image.load(filename+str(count)+ '.jpg')
             scaled = pygame.transform.smoothscale(image,[width,height])
             self._images.append(scaled)
@@ -31,8 +32,8 @@ if __name__ == "__main__":
     TEST_W=64
     TEST_H=64
     TEST_FILES = "images\\test\\test"
-    image_obj= ImageList(TEST_FILES, TEST_H, TEST_W)
-
+    image_obj= ImageList(TEST_FILES, TEST_W, TEST_H)
+    clock = pygame.Clock()
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.RESIZABLE)
     pygame.display.set_caption("SNAKED")
 
@@ -57,6 +58,7 @@ if __name__ == "__main__":
     
 
         pygame.display.flip()
+        clock.tick(60)
 
     pygame.quit() #exits pygame
     quit()

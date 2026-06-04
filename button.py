@@ -14,7 +14,7 @@ class Button():
     BG_COLOR = pygame.Color('White')
     BORDER_COLOR = pygame.Color('Black')
 
-    def __init__(self, x, y, w, h, text, font = None, font_color = FONT_COLOR, highlight_color = HIGHLIGHT_COLOR, bg_color = BG_COLOR, border_color = BORDER_COLOR):
+    def __init__(self, text, x, y, w, h, callback=None):
         # init internal variables
         # ""
         self._mouse_over = False
@@ -33,15 +33,11 @@ class Button():
         self._x = x
         self._y = y
         self._text = text
-        if font is None:
-            self._font = pygame.font.Font( Button.DEFAULT_FONT, self.DEFAULT_FONT_SIZE)
-        else: 
-            self._font = font
         #color codes defined
-        self._font_color = font_color
-        self._bg_color = bg_color
-        self._border_color = border_color
-        self._highlight_color = highlight_color
+        self._font_color = Button.FONT_COLOR
+        self._bg_color = Button.BG_COLOR
+        self._border_color = Button.BORDER_COLOR
+        self._highlight_color = Button.HIGHLIGHT_COLOR
         self._down = False
         self._action = None
 

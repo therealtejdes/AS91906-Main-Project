@@ -61,10 +61,12 @@ clock = pygame.time.Clock()
 # Menu class starts here
 
 class Menu():
-    def __innit__(self): # "self" makes sure that the class wont be touched
+    def __init__(self): # "self" makes sure that the class wont be touched
         # self._ values start here:
         # tracker variable defined in order to spearate the main and sub menu
-        self.state == "menu"
+        self.state = "menu"
+        # font for the title surf defined
+        self.font = pygame.font.SysFont("Arial", 67)
         # scaled code
         self.scale_x = SCREEN_WIDTH / BASE_WIDTH
         self.scale_y = SCREEN_HEIGHT / BASE_HEIGHT
@@ -89,7 +91,7 @@ class Menu():
                    # width of the "START" button is now scaled to the screens width
                    int(BUTTON_WIDTH * self.scale_y),
                    # height of the "START" button is now scaled to the screens heght
-                   int (BUTTON_HEIGHT * self.scale_x), 
+                   int(BUTTON_HEIGHT * self.scale_x), 
                    lambda: self.set_state("start")),
 
         # process repeated for other buttons
@@ -97,8 +99,8 @@ class Menu():
             Button("HIGH SCORE", int(BUTTON_CENTER * self.scale_x),
                    # center dimension of the "High Score" button is now scaled  
                    int(280 * self.scale_x), 
-                   int(BUTTON_WIDTH * self.scale_y),
-                   int(BUTTON_HEIGHT * self.scale_x), 
+                   int(BUTTON_WIDTH * self.scale_x),
+                   int(BUTTON_HEIGHT * self.scale_y), 
                    lambda: self.set_state("high_score")), 
 
             # Settings Button
@@ -117,7 +119,7 @@ class Menu():
         # also to be sclaled
         self.back_button = Button("Back to Menu", int(BUTTON_X + self.scale_x), 
         int(BUTTON_Y * self.scale_y), 
-        int(BACK_BUTTON_WIDTH * self.scale_w), 
+        int(BACK_BUTTON_WIDTH * self.scale_x), 
         int(BACK_BUTTON_HEIGHT * self.scale_y), 
         lambda: self.set_state("menu"))
 
@@ -160,7 +162,7 @@ class Menu():
         if self.state == "menu":
             # "main menu string has become an image suface"
             # this will be the title that has been drawn above gameplay 
-            title_surf = pygame.font.render("SNAKED", True, MAROON)
+            title_surf = self.font.render("SNAKED", True, WHITE)
             # "screen.blit" copies the rendered text onto the center of the screen
             surface.blit(title_surf, (SCREEN_WIDTH // 2 - title_surf.get_width() // 2, 100)) #screen width divided by two
            # the class "button" that has been mentioned in the self.button list
@@ -191,7 +193,7 @@ class Menu():
 
         # if the user switches the menu state to the "High_Score" screen    
         elif self.state == "high_score":
-            title_surf = pygame.font.render("CURRENT USER HIGH SCORE", True, WHITE) #font engine converts the text into an image surface
+            title_surf = self.font.render("CURRENT USER HIGH SCORE", True, WHITE) #font engine converts the text into an image surface
             surface.blit(title_surf, (200, 25))
             self.sprite_group.draw(surface)
             self.back_button.draw(surface)
@@ -206,7 +208,7 @@ class Menu():
 
 # The main loop for the menu starts here
 # this is not apart of the class
-menu_system = Menu()
+menu = Menu()
 # boolian control variable establishing 
 # initates the main game loop keeping the application open
 running = True
@@ -216,18 +218,12 @@ while running:
         if event.type == pygame.QUIT:
             # the running control is false
             running = False
-        # "pygame.VIDEORESIZE" is triggered when:
-        # the main window is dragged out 
-        elif event.type == pygame.VIDEORESIZE:
-            # both events are variables that the pygame module already creates
-            # this is done so that the numbers the pygame is running is being coded into
-            # the pygame.VIDEORESIZE, hence is the purpose of this function.
-            menu_system.handle_resize(event.w, event.h)
-        menu_system.handle_events(event)
+        
+        menu.handle_events(event)
     # system loop tick components in order are executed
-    menu_system.update()
+    menu.update()
     # once updated, the required coordinates will be plotted to surface canvas frame
-    menu_system.draw(screen)
+    menu.draw(screen)
 
     # the flip function swaps the hidden drawn layer to the visible screen layer
     # coded to show the now updated graphics of the screen 
