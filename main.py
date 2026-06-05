@@ -84,44 +84,53 @@ class Menu():
         # theis makes importing/exporting and drawing the sprite much easier 
 
         # list for main buttons
-        self.buttons = [
-             Button("START", int(BUTTON_CENTER * self.scale_x), 
+        
+        start_button = Button(int(BUTTON_CENTER * self.scale_x), 
                    # the center dimension is now scaled
-                   int(200 * self.scale_x), 
+                   int(200 * self.scale_y), 
                    # width of the "START" button is now scaled to the screens width
                    int(BUTTON_WIDTH * self.scale_y),
                    # height of the "START" button is now scaled to the screens heght
                    int(BUTTON_HEIGHT * self.scale_x), 
-                   lambda: self.set_state("start")),
+                   "START"),
 
         # process repeated for other buttons
             # High score button
-            Button("HIGH SCORE", int(BUTTON_CENTER * self.scale_x),
+        high_score_button = Button(int(BUTTON_CENTER * self.scale_x),
                    # center dimension of the "High Score" button is now scaled  
-                   int(280 * self.scale_x), 
+                   int(280 * self.scale_y), 
                    int(BUTTON_WIDTH * self.scale_x),
                    int(BUTTON_HEIGHT * self.scale_y), 
-                   lambda: self.set_state("high_score")), 
+                   "HIGH_SCORE")
 
             # Settings Button
-            Button("SETTINGS", int(BUTTON_CENTER * self.scale_x), 
-                   int(360 * self.scale_x), 
+        settings_button = Button(int(BUTTON_CENTER * self.scale_x), 
+                   int(360 * self.scale_y), 
                    int(BUTTON_WIDTH * self.scale_x), 
                    int(BUTTON_HEIGHT * self.scale_y), 
-                   lambda: self.set_state("settings"))
-        ]
+                   "SETTINGS")
+        
         # the lambda code is an incline shortcut function
         # when the button is pressed (mentioned in button class), its call back is triggered
+        start_button.action = lambda: self.set_state("start")
+        high_score_button.action = lambda: self.set_state("high_score")
+        settings_button.action = lambda: self.set_state("settings")
+
+        # list of buttons to be redifined
+        self.buttons = [ start_button, high_score_button, settings_button]
       
         # The back button, for returning back to home menu
         # adds the width 
         # A back button for the sub-screens
         # also to be sclaled
-        self.back_button = Button("Back to Menu", int(BUTTON_X + self.scale_x), 
+        self.escape = Button(int(BUTTON_X * self.scale_x), 
         int(BUTTON_Y * self.scale_y), 
         int(BACK_BUTTON_WIDTH * self.scale_x), 
-        int(BACK_BUTTON_HEIGHT * self.scale_y), 
-        lambda: self.set_state("menu"))
+        int(BACK_BUTTON_HEIGHT * self.scale_y),
+        "ESC" )
+
+        self.escape.action = lambda: self.set_state("menu")
+        # returns to menu
 
 
     def set_state(self, new_state):
@@ -133,10 +142,10 @@ class Menu():
         # click event will be passed down through all three main buttons
         if self.state == "menu":
             for button in self.buttons:
-                button.handle_event(event)
+                button.mouse_click(event)
         # the click will only be passed down to the back button
         else:
-            self.back_button.handle_event(event)
+            self.back_button.mouse_click(event)
 
  # beggining of running the calculations
     # mouse calculations are run
@@ -145,9 +154,9 @@ class Menu():
         # if on main menu, the 3 buttons will change colors if mouse is hovering over them
         if self.state == "menu":
             for button in self.buttons:
-                button.check_hover(mouse_pos)
+                button.mouse_move(mouse_pos)
         else:
-            self.back_button.check_hover(mouse_pos)
+            self.back_button.mouse_move(mouse_pos)
             # If hovered over "start", the mysprite instance is updated
             if self.state == "start":
                 self.sprite_group.update() # mysprite updated using the group function
@@ -219,7 +228,7 @@ while running:
             # the running control is false
             running = False
         
-        menu.handle_events(event)
+        menu.mouse_click(event)
     # system loop tick components in order are executed
     menu.update()
     # once updated, the required coordinates will be plotted to surface canvas frame
