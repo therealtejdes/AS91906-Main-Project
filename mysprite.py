@@ -25,38 +25,15 @@ class MySprite():
 
         self._current_frame = 0
         self._start_frame = 0
-        self._end_frame = 0
+        self._end_frame =  0
+        self._next_frame = time.time()
         self._delay = -1
         self._repeat= False
-        self._next_move = time.time()
+        self._next_move = time.time() + self._delay
         self._move_delay = 0
 
-        if x>=0 and x<=SCREEN_WIDTH:
-            self._x = x
-        else:
-            print("INVALID")
-            exit(0)
-
-        if y>=0 and y<=SCREEN_HEIGHT:
-            self._y = y
-        else:
-            print("INVALID")
-            exit(0)
-
-        if w>=0 and w<=SCREEN_WIDTH:
-            self._w = w
-        else:
-            print("INVALID")
-            exit(0)
-
-        if h>=0 and h<=SCREEN_HEIGHT:
-            self._h = h
-        else:
-            print("INVALID")
-            exit(0)
-
     def get_rect(self):
-        return(self._x,self._y,self._w, self._h)
+        return pygame.Rect(self._x,self._y,self._w, self._h)
 
 
     def get_x(self):
@@ -120,17 +97,17 @@ class MySprite():
         #
         if end_frame >=0 and end_frame < len(self._images.images) and start_frame <= end_frame:
             self._end_frame = end_frame
+        
+        if repeat:
+            self._repeat = True 
+        else:
+            self._repeat = False
 
         if delay >=0:
             self._delay = delay
 
-        if repeat:
-            self._delay = True
-        else:
-            self._repeat = False
-
+        self._repeat = repeat
         self._next_frame = time.time() + delay
-
 
     def animate(self, reset_animation = False):
         # If we are animating
@@ -146,7 +123,7 @@ class MySprite():
                         self._current_frame = self._start_frame
                 else:
                     self._current_frame += 1
-                self_next_frame = self._next_frame + self._delay
+                self._next_frame = time.time() + self._delay
         # This shows that the next frame will pop up 
 
         
@@ -220,5 +197,4 @@ if __name__ == "__main__":
     pygame.quit()
     quit()
     # This allows for the window to be manually exited.
-   
     

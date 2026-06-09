@@ -1,26 +1,27 @@
 import pygame
+MID_NIGHT_BLUE =(0, 24, 50) # for the button background colors
+MAROON = (128, 0, 0) # for the button text and border colors.
 
 class Button():
-    # class defaults
-    MIN_BUTTON_W = 100
-    MIN_BUTTON_H = 50
+    MIN_BUTTON_W = 10
+    MIN_BUTTON_H = 10
     CLICK_OFFSET = 5
 
-    DEFAULT_FONT = 'freesansbold.ttf'
-    DEFAULT_FONT_SIZE = 32
+    DEFAULT_FONT = 'Sans New Roman'  
+    DEFAULT_FONT_SIZE = 40
 
-    FONT_COLOR = pygame.Color('Black')
+    FONT_COLOR = MAROON
     HIGHLIGHT_COLOR = pygame.Color('darkgrey')
-    BG_COLOR = pygame.Color('White')
-    BORDER_COLOR = pygame.Color('Black')
+    BG_COLOR = MID_NIGHT_BLUE
+    BORDER_COLOR = (MAROON)
 
+    # button innit function
     def __init__(self, text, x, y, w, h, callback=None):
         # init internal variables
-        # ""
         self._mouse_over = False
         self._button_down = False
-        self._disabled = False  # need to make property for this.
-        self._border = 4        # border width. not configurable yet 
+        self._disabled = False  
+        self._border = 4        
 
         if w < Button.MIN_BUTTON_W:
             self._w = Button.MIN_BUTTON_W
@@ -30,20 +31,22 @@ class Button():
             self._h = Button.MIN_BUTTON_H
         else:
             self._h = h
+            
         self._x = x
         self._y = y
         self._text = text
-        #color codes defined
+        # color coded definitions effected
         self._font_color = Button.FONT_COLOR
         self._bg_color = Button.BG_COLOR
         self._border_color = Button.BORDER_COLOR
         self._highlight_color = Button.HIGHLIGHT_COLOR
         self._down = False
-        self._action = None
-
-    # definition for the class for code 
+        self._action = callback # callback has been defined above
+        
+        # font propertes
+        self._font = pygame.font.SysFont(Button.DEFAULT_FONT, Button.DEFAULT_FONT_SIZE)
     def click(self):
-        if self._action == None:
+        if self._action is None:
             print("No action function set for button:", self._text)
         else:
             self._action()
@@ -53,9 +56,10 @@ class Button():
     
     def get_rect(self):
         return pygame.Rect(self._x, self._y, self._w, self._h)
+
     def mouse_move(self, x, y):
         if not self._disabled:
-            if self.contains( x, y):
+            if self.contains(x, y):
                 self._mouse_over = True
             else:
                 self._mouse_over = False
@@ -67,87 +71,47 @@ class Button():
                     self._button_down = True
             elif event.type == pygame.MOUSEBUTTONUP:
                 if self._button_down and self._mouse_over:
-                    if not self._action is None:
-                        self._action() # I'm clicked
+                    if self._action is not None:
+                        self._action() # im' clicked
                     else:
                         print("button", self._text, "has no function set")
                 self._button_down = False
 
     def set_action(self, action_function):
-        if type(action_function).__name__ == 'function':
-            self._action = action_function
+        self._action = action_function
     def get_action(self):
         return self._action
     action = property(get_action, set_action)
 
     def draw(self, screen):
-        # draw rectangle
-        pygame.draw.rect(screen, self._border_color, self.get_rect())
-        pygame.draw.rect(screen, self._bg_color, pygame.Rect(self._x + self._border, self._y + self._border, self._w - self._border*2, self._h - self._border*2))
+        # buttons that are scaled 
+        scaled_font_size = int(self._h * 0.5) 
+        # the font of the buttons are directly proportionally scaled to the buttons
+        self._font = pygame.font.SysFont(Button.DEFAULT_FONT, max(12, scaled_font_size))
+        # the radius of the buttons, order for them to be rounded
+        radius = int(self._h * 3)
+        # draws the rectangle
+        pygame.draw.rect(screen, self._border_color, self.get_rect(), border_radius=radius)
+        inner_rad= pygame.Rect(self._x + self._border, self._y + self._border, self._w - self._border*2, self._h - self._border*2)
+        # for the perfect inner shape, value of the border is subtracted from the radius
+        inner_radius = max(0, radius - self._border)
+        # draws the updated button curved
+        pygame.draw.rect(screen, self._bg_color, inner_rad, border_radius= inner_radius)
 
-        # draw the text
+        # draws the text
         color = self._font_color
-        offset = 0
+        offset = 0 # so that button doesn't lag
         if self._mouse_over:
             if self._button_down:
                 offset = Button.CLICK_OFFSET
             else:
                 color = self._highlight_color
-        
-        # create the rendered text as a surface
+        # rendering code for my text
+        # creates the rendered text as a surface
         rendered_text = self._font.render(self._text, True, color, self._bg_color)
-        # get the rectangle for this new surface
+        # gets the rectangle for this surface
         rendered_text_rect = rendered_text.get_rect() 
-        # set the centre of this rectangle to the centre of this button (self)
         rendered_text_rect.center = (self._x + self._w / 2 + offset, self._y + self._h / 2 + offset)
-        # tells where the button is going to be drawn
+        # tells where the button is to be drawn 
         screen.blit(rendered_text, rendered_text_rect)
-        
-# Test Code
-if __name__ == "__main__":\
-    # a few constants for testing
-    
-    TEST_X = 300
-    TEST_Y = 200 # (800-200)/2
-    TEST_W = 200 # same calculations, sets the button to the middle of the screen 
-    TEST_H = 100
-    BLUE = pygame.Color("blue")
 
-    # a simple sample function to set for the button action
-    def test_click():
-        # Once the button is pressed, this message will be printed on the server
-        print("The test button was clicked")
-
-    # init pygame and open the window
-    pygame.init()
-    screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
-    quitting = False
-    
-    my_button = Button(TEST_X, TEST_Y, TEST_W, TEST_H, "START", border_color=BLUE)
-    my_button.action = test_click
-
-    while not quitting:
-        coords = pygame.mouse.get_pos()
-        # check the even queue for messages
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quitting = True
-
-            # tell the button about mouse events
-            if event.type == pygame.MOUSEMOTION:
-                my_button.mouse_move(coords[0], coords[1])
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                my_button.mouse_click(event)
-            if event.type == pygame.MOUSEBUTTONUP:
-                my_button.mouse_click(event)
-        #Clear The Screen
-        screen.fill(pygame.Color('black'))
-
-        # draw my button
-        my_button.draw(screen)
-
-        # make the new screen visible
-        pygame.display.flip()
-
-    pygame.quit()
-    quit()
