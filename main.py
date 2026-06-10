@@ -50,6 +50,11 @@ MENU_FONT_SIZE = 100
 SETTINGS_SCALE_INTEGER = 460
 HIGH_SCORE_SCALE_INTEGER = 380
 START_SCALE_INTEGER = 300
+# convert alpha allows for the image to be bplaced upon much easier
+Checker_board = pygame.image.load('images/CHECKER_BOARD.png').convert_alpha
+
+
+
 
 # gameplay caption:
 pygame.display.set_caption("SNAKED, By Tej Desai") 
@@ -209,12 +214,14 @@ class Menu():
                 
         # if the menu state switches to the "start" screen:
         elif self.state == "start":
+            screen.blit(Checker_board)
+            # if start is pressed, the checkboard will be drawn on screen
             # Once "START" is clicked, this condition becomes true
             # this initializes the next four lines of code
             # this will be the title that has been drawn above
             Start_scale = current_font.render("SNAKED", True, WHITE) # font engine converts the text "SNAKED" into an image surface
     
-            surface.blit(Start_scale,(SCREEN_WIDTH // 2 - title_surf.get_width() // 2, int(25 * self.scale_y)))
+            surface.blit(Start_scale,(SCREEN_WIDTH // 2 - Start_scale.get_width() // 2, int(25 * self.scale_y)))
             # sprites postion is updated/viewed
             self.sprite.draw(surface)
             # draw method for the back button
@@ -241,10 +248,8 @@ class Menu():
 # class ends here
 
 # The main loop for the menu starts here
-# this is not apart of the class
 menu = Menu()
 # boolian control variable establishing 
-# initates the main game loop keeping the application open
 running = True
 while running:
     for event in pygame.event.get():
@@ -264,8 +269,8 @@ while running:
     # the flip function swaps the hidden drawn layer to the visible screen layer
     
     pygame.display.flip()
-    # screen to to 60 fps
-    clock.tick(60)
+    # screen to to 80 fps
+    clock.tick(80)
 
 # signals the end of all pygame modules
 pygame.quit()
