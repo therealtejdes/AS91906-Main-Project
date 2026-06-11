@@ -50,9 +50,11 @@ MENU_FONT_SIZE = 100
 SETTINGS_SCALE_INTEGER = 460
 HIGH_SCORE_SCALE_INTEGER = 380
 START_SCALE_INTEGER = 300
+DRAWN_START_SCALE_INTEGERR = 25
+DRAWN_HIGH_SCORE_SCALE_INTEGERR = 25
+DRAWN_SETTING_SCALE_INTEGERR = 25
 # convert alpha allows for the image to be bplaced upon much easier
-Checker_board = pygame.image.load('images/CHECKER_BOARD.png').convert_alpha
-
+CHECKERBOARD = pygame.image.load("CHECKER_BOARD.png")
 
 
 
@@ -214,38 +216,55 @@ class Menu():
                 
         # if the menu state switches to the "start" screen:
         elif self.state == "start":
-            screen.blit(Checker_board)
+            screen.blit(CHECKERBOARD, (300,400))
+          
             # if start is pressed, the checkboard will be drawn on screen
             # Once "START" is clicked, this condition becomes true
             # this initializes the next four lines of code
             # this will be the title that has been drawn above
-            Start_scale = current_font.render("SNAKED", True, WHITE) # font engine converts the text "SNAKED" into an image surface
+            Start_scale = current_font.render("GAME PLAY", True, NAVY_BLUE) # font engine converts the text "SNAKED" into an image surface
     
-            surface.blit(Start_scale,(SCREEN_WIDTH // 2 - Start_scale.get_width() // 2, int(25 * self.scale_y)))
-            # sprites postion is updated/viewed
-            self.sprite.draw(surface)
+            surface.blit(Start_scale,(SCREEN_WIDTH // 2 - Start_scale.get_width() // 2, int(DRAWN_START_SCALE_INTEGERR * self.scale_y)))
+         
+        
             # draw method for the back button
-            # using the back buttons coordinates, the background rectangle is rendered
-            # #Back to menu text is overlayed on the screen"
-            # the user can escape the screen and return to the main menu
-            self.back_button.draw(surface)
+        
+            self.back_button.draw(surface) # the surface of the button is drawn to the upper side of the screen 
 
         # process is repeated for the other buttons
 
         # if the user switches the menu state to the "High_Score" screen    
         elif self.state == "high_score":
-            High_Score_Font = current_font.render("CURRENT USER HIGH SCORE", True, WHITE) #font engine converts the text into an image surface
-            surface.blit(High_Score_Font, (SCREEN_WIDTH // 2 - High_Score_Font.get_width() // 2, int(25 * self.scale_y)))
-            self.sprite.draw(surface)
+            High_Score_Font = current_font.render("HIGH SCORE", True, NAVY_BLUE) #font engine converts the text into an image surface
+            surface.blit(High_Score_Font, (SCREEN_WIDTH // 2 - High_Score_Font.get_width() // 2, int(DRAWN_HIGH_SCORE_SCALE_INTEGERR * self.scale_y)))
+            
             self.back_button.draw(surface)
 
         # if the user switches menu state to the "Settings" screen    
         elif self.state == "settings":
-            title_surf = current_font.render("USER SETTINGS", True, WHITE)
-            surface.blit(title_surf, (SCREEN_WIDTH // 2 - title_surf.get_width() // 2, int(25 * self.scale_y)))
-            self.sprite.draw(surface)
+            title_surf = current_font.render("USER SETTINGS", True, NAVY_BLUE)
+            surface.blit(title_surf, (SCREEN_WIDTH // 2 - title_surf.get_width() // 2, int(DRAWN_SETTING_SCALE_INTEGERR * self.scale_y)))
+         
             self.back_button.draw(surface)
 # class ends here
+# snake class 
+class Snake():
+    # snake movement variables
+    UP = 0
+    RIGHT = 1
+    DOWN = 2
+    LEFT = 3
+    VECTOR = [(0,-1), (1,0), (2,1), (3,2)]
+    def __init__ (self, x, y, direction = UP):
+        self._x = x 
+        self._y = y
+        self._direction = direction
+    def reset(self):
+        self._seg_list = [] # snakes head into a list
+        self._seg_list.append(MySprite("x"),("y"),("direction")) #the Mysprite object 1(head)
+        self._seg_list.append(MySprite)
+
+
 
 # The main loop for the menu starts here
 menu = Menu()
