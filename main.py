@@ -54,7 +54,7 @@ DRAWN_START_SCALE_INTEGERR = 25
 DRAWN_HIGH_SCORE_SCALE_INTEGERR = 25
 DRAWN_SETTING_SCALE_INTEGERR = 25
 # convert alpha allows for the image to be bplaced upon much easier
-CHECKERBOARD = pygame.image.load("CHECKER_BOARD.png")
+CHECKERBOARD = pygame.image.load("CHECKERBOARD.png")
 
 
 
@@ -216,13 +216,13 @@ class Menu():
                 
         # if the menu state switches to the "start" screen:
         elif self.state == "start":
-            screen.blit(CHECKERBOARD, (300,400))
+            screen.blit(CHECKERBOARD, (0,0))
           
             # if start is pressed, the checkboard will be drawn on screen
             # Once "START" is clicked, this condition becomes true
             # this initializes the next four lines of code
             # this will be the title that has been drawn above
-            Start_scale = current_font.render("GAME PLAY", True, NAVY_BLUE) # font engine converts the text "SNAKED" into an image surface
+            Start_scale = current_font.render("GAME PLAY", True, WHITE) # font engine converts the text "SNAKED" into an image surface
     
             surface.blit(Start_scale,(SCREEN_WIDTH // 2 - Start_scale.get_width() // 2, int(DRAWN_START_SCALE_INTEGERR * self.scale_y)))
          
@@ -242,27 +242,37 @@ class Menu():
 
         # if the user switches menu state to the "Settings" screen    
         elif self.state == "settings":
-            title_surf = current_font.render("USER SETTINGS", True, NAVY_BLUE)
-            surface.blit(title_surf, (SCREEN_WIDTH // 2 - title_surf.get_width() // 2, int(DRAWN_SETTING_SCALE_INTEGERR * self.scale_y)))
+            Settings_Font = current_font.render("USER SETTINGS", True, NAVY_BLUE)
+            surface.blit(Settings_Font, (SCREEN_WIDTH // 2 - Settings_Font.get_width() // 2, int(DRAWN_SETTING_SCALE_INTEGERR * self.scale_y)))
          
             self.back_button.draw(surface)
 # class ends here
 # snake class 
 class Snake():
     # snake movement variables
+    HEAD = 0
+    TAIL = -1
     UP = 0
     RIGHT = 1
     DOWN = 2
     LEFT = 3
-    VECTOR = [(0,-1), (1,0), (2,1), (3,2)]
+    VECTOR = [(0,-1), (1,0), (2,1), (3,2)] # direction for 
     def __init__ (self, x, y, direction = UP):
         self._x = x 
         self._y = y
         self._direction = direction
     def reset(self):
         self._seg_list = [] # snakes head into a list
-        self._seg_list.append(MySprite("x"),("y"),("direction")) #the Mysprite object 1(head)
-        self._seg_list.append(MySprite)
+        SNAKE_HEAD = self._seg_list.append(MySprite("x"),("y"),("direction")) #the Mysprite object 1(head)
+        SNAKE_TAIL = self._seg_list.append(MySprite("x"),("y"),("direction"))
+    def update (self):
+        # snake is to decide whether it will delete its tail
+        if not self._grow:
+            self._seg_list.clear() # deletes the tail 
+
+        self._seg_list.insert(MySprite("x"), ("y"), ("direction"))
+
+
 
 
 
