@@ -4,6 +4,7 @@ import time
 import json
 import sys
 import button
+import random # for the food 
 from imagelist import ImageList # class extracted from the other file
 from mysprite import MySprite # class extracted from other file 
 from button import Button # class extracted from the other file
@@ -18,8 +19,7 @@ SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) #avoids the usage of magic numbers
 
 # Logistical values for scaling
-#constants updated for scaling:
-# target base resolution
+
 SCALED_WIDTH = 800
 SCALED_HEIGHT = 600 
 
@@ -55,7 +55,7 @@ DRAWN_HIGH_SCORE_SCALE_INTEGERR = 25
 DRAWN_SETTING_SCALE_INTEGERR = 25
 # convert alpha allows for the image to be bplaced upon much easier
 CHECKERBOARD = pygame.image.load("CHECKERBOARD.png")
-
+TILESIZE = 16
 
 
 # gameplay caption:
@@ -201,14 +201,12 @@ class Menu():
         # font/blit loop
         # If the main menu has been opened
         if self.state == "menu":
-            # "main menu string has become an image suface"
             # this will be the title that has been drawn above gameplay 
             # render means to put the text on to the surface of the screen 
             game_title = current_font.render("SNAKED", True, NAVY_BLUE)
             # "screen.blit" copies the rendered text onto the center of the screen
             surface.blit(game_title, (SCREEN_WIDTH // 2 - game_title.get_width() // 2, int(100 * self.scale_y))) #screen width divided by two
-            # the blit function essentially places this "image" on the surface of the screen
-          
+
             for button in self.buttons:
                 # arranges to draw the three buttons on the screen 
                 # this is done by the .draw() function
@@ -219,8 +217,6 @@ class Menu():
             screen.blit(CHECKERBOARD, (0,0))
           
             # if start is pressed, the checkboard will be drawn on screen
-            # Once "START" is clicked, this condition becomes true
-            # this initializes the next four lines of code
             # this will be the title that has been drawn above
             Start_scale = current_font.render("GAME PLAY", True, WHITE) # font engine converts the text "SNAKED" into an image surface
     
@@ -256,21 +252,30 @@ class Snake():
     RIGHT = 1
     DOWN = 2
     LEFT = 3
-    VECTOR = [(0,-1), (1,0), (2,1), (3,2)] # direction for 
-    def __init__ (self, x, y, direction = UP):
+    VECTOR = [(0,-1), (1,0), (0,1), (-1,0)] # direction for 
+    SNAKE_HEAD_IMAGE = "SNAKE_HEAD.png"
+    SNAKE_TAIL_IMAGE = "SNAKE_TAIL.png"
+    def __init__ (self,screen, x, y, direction = UP):
         self._x = x 
         self._y = y
         self._direction = direction
+        self._screen = screen
+
     def reset(self):
         self._seg_list = [] # snakes head into a list
-        SNAKE_HEAD = self._seg_list.append(MySprite("x"),("y"),("direction")) #the Mysprite object 1(head)
+        SNAKE_HEAD = self._seg_list.append(MySprite(self._x, self._y) #the Mysprite object 1(head)
         SNAKE_TAIL = self._seg_list.append(MySprite("x"),("y"),("direction"))
+
     def update (self):
         # snake is to decide whether it will delete its tail
         if not self._grow:
             self._seg_list.clear() # deletes the tail 
 
         self._seg_list.insert(MySprite("x"), ("y"), ("direction"))
+
+    def draw(self):
+        for segment in self._seg_list:
+            segment.draw()
 
 
 
@@ -292,10 +297,7 @@ while running:
         menu.handle_events(event)
     # system loop tick components in order are executed
     menu.update()
-    # once updated, the required coordinates will be plotted to surface canvas frame
     menu.draw(screen)
-
-    # the flip function swaps the hidden drawn layer to the visible screen layer
     
     pygame.display.flip()
     # screen to to 80 fps
