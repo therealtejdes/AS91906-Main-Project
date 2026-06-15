@@ -14,8 +14,7 @@ pygame.init()
 # important logistical values for my screen 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-# usign the two values on the previous two lines of code, the screen is initialized to this
-# set_mode sets the mode of the screen to the dimensions previously defined
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) #avoids the usage of magic numbers
 
 # Logistical values for scaling
@@ -32,11 +31,12 @@ BUTTON_HEIGHT= 100
 BUTTON_CENTER = 300 # 
 
 # Values for the back button 
-# This will be placed on the left hand side of my game screen
+# placed on the left hand side of game screen
 BUTTON_X = 20
 BUTTON_Y = 20
 BACK_BUTTON_WIDTH = 200
 BACK_BUTTON_HEIGHT = 50
+BACK_BUTTON_PADDING = 20
 
 # Factory image 
 # Purpose will be defined within the menu class
@@ -47,6 +47,8 @@ FACTORY_IMAGE_COLOR = (255, 255, 255) # RGB color for white
 
 MENU_FONT_SIZE = 100
 
+MESSAGE_FONT = pygame.font.SysFont("Arial", 50)
+
 SETTINGS_SCALE_INTEGER = 460
 HIGH_SCORE_SCALE_INTEGER = 380
 START_SCALE_INTEGER = 300
@@ -55,7 +57,7 @@ DRAWN_HIGH_SCORE_SCALE_INTEGERR = 25
 DRAWN_SETTING_SCALE_INTEGERR = 25
 # convert alpha allows for the image to be bplaced upon much easier
 CHECKERBOARD = pygame.image.load("CHECKERBOARD.png")
-TILESIZE = 16
+TILESIZE = 16 # in relation to make the snake move
 
 
 # gameplay caption:
@@ -72,10 +74,10 @@ NAVY_BLUE = (0, 0, 128)
 
 # pygame clock (running)
 clock = pygame.time.Clock()
-# The chekcerboard has been manually drawn, and is uploaded as an images
 
 #since Imagelist and Mysprite are already defined, in multiple other files
 # Menu class starts here
+
 
 class Menu():
     def __init__(self): # "self" makes sure that the class wont be touched
@@ -141,9 +143,12 @@ class Menu():
         # The back button, for returning back to home menu
         # adds the width 
         # A back button for the sub-screens
-        # also to be sclaled
-        self.back_button = Button("ESC",int(BUTTON_X * self.scale_x), 
-        int(BUTTON_Y * self.scale_y), 
+        
+        Escape_x = int(SCREEN_WIDTH - (BACK_BUTTON_WIDTH * self.scale_x) - (BACK_BUTTON_PADDING * self.scale_x))
+        Escape_y = int(BUTTON_Y * self.scale_y), 
+
+
+        self.back_button = Button("ESC", Escape_x, Escape_y,
         int(BACK_BUTTON_WIDTH * self.scale_x), 
         int(BACK_BUTTON_HEIGHT * self.scale_y))
 
@@ -174,7 +179,6 @@ class Menu():
         self.scale_x = SCREEN_WIDTH / SCALED_WIDTH
         self.scale_y = SCREEN_HEIGHT / SCALED_HEIGHT
         
-        # Re-initialize your buttons so they reposition/scale to the new window size
         self.__init__()
 
  # beggining of running the calculations
@@ -209,8 +213,7 @@ class Menu():
 
             for button in self.buttons:
                 # arranges to draw the three buttons on the screen 
-                # this is done by the .draw() function
-                button.draw(surface)
+                button.draw(surface) # draws all three buttons on the screen 
                 
         # if the menu state switches to the "start" screen:
         elif self.state == "start":
@@ -242,6 +245,8 @@ class Menu():
             surface.blit(Settings_Font, (SCREEN_WIDTH // 2 - Settings_Font.get_width() // 2, int(DRAWN_SETTING_SCALE_INTEGERR * self.scale_y)))
          
             self.back_button.draw(surface)
+
+
 # class ends here
 # snake class 
 class Snake():
@@ -252,24 +257,33 @@ class Snake():
     RIGHT = 1
     DOWN = 2
     LEFT = 3
-    VECTOR = [(0,-1), (1,0), (0,1), (-1,0)] # direction for 
+    VECTOR = [(0,-1), (1,0), (0,1), (-1,0)] # direction for snakes novements
     SNAKE_HEAD_IMAGE = "SNAKE_HEAD.png"
     SNAKE_TAIL_IMAGE = "SNAKE_TAIL.png"
-    def __init__ (self,screen, x, y, direction = UP):
-        self._x = x 
-        self._y = y
+    def __init__ (self,screen, x, y, direction = UP, ):
+        self._x = 400
+        self._y = 300
         self._direction = direction
         self._screen = screen
+        self._color = WHITE
+        self._length = 1
+        self.snake_size = 20
+
 
     def reset(self):
         self._seg_list = [] # snakes head into a list
-        SNAKE_HEAD = self._seg_list.append(MySprite(self._x, self._y) #the Mysprite object 1(head)
-        SNAKE_TAIL = self._seg_list.append(MySprite("x"),("y"),("direction"))
+        self._seg_list.append(MySprite(self._x, self._y)) #the Mysprite object 1(head)
+        self._seg_list.append(MySprite("x"),("y"),("direction"))
 
-    def update (self):
+    def update_position (self):
         # snake is to decide whether it will delete its tail
         if not self._grow:
             self._seg_list.clear() # deletes the tail 
+        
+
+        self._x +=Snake.VECTOR [self._direction] [0] * TILESIZE 
+        self._y +=Snake.VECTOR [self._direction] [1] * TILESIZE
+       
 
         self._seg_list.insert(MySprite("x"), ("y"), ("direction"))
 
@@ -277,6 +291,11 @@ class Snake():
         for segment in self._seg_list:
             segment.draw()
 
+
+    def message(msg, text_colour, bkgd_colour):
+        text = MESSAGE_FONT.render(msg, True, text_colour, bkgd_colour)
+        text_box = text.get_rect(center=(500, 360))
+        screen.blit(text, text_box)
 
 
 
@@ -304,6 +323,7 @@ while running:
     clock.tick(80)
 
 # signals the end of all pygame modules
+message("GAME OVER", BLACK, WHITE)
 pygame.quit()
 # ensures that the game closes down without freezzing 
 sys.exit()
