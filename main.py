@@ -5,6 +5,7 @@ import json
 import sys
 import button
 import random # for the food 
+from os.path import exists
 from imagelist import ImageList # class extracted from the other file
 from mysprite import MySprite # class extracted from other file 
 from button import Button # class extracted from the other file
@@ -38,12 +39,7 @@ BACK_BUTTON_WIDTH = 200
 BACK_BUTTON_HEIGHT = 50
 BACK_BUTTON_PADDING = 20
 
-# Factory image 
 # Purpose will be defined within the menu class
-FACTORY_IMAGE_WIDTH = 200
-
-FACTORY_IMAGE_HEIGHT = 200
-FACTORY_IMAGE_COLOR = (255, 255, 255) # RGB color for white
 
 MENU_FONT_SIZE = 100
 
@@ -59,8 +55,6 @@ DRAWN_SETTING_SCALE_INTEGERR = 25
 CHECKERBOARD = pygame.image.load("CHECKERBOARD.png").convert_alpha()
 TILESIZE_X = 16 # in relation to make the snake move
 TILESIZE_Y = 16
-SNAKE_HEAD = pygame.image.load("snake_head.png").convert_alpha()
-SNAKE_TAIL = pygame.image.load("snake_tail.png").convert_alpha()
 
 # gameplay caption:
 pygame.display.set_caption("SNAKED, By Tej Desai") 
@@ -91,11 +85,10 @@ class Snake():
     DOWN = 2
     LEFT = 3
     VECTOR = [(0,-1), (1,0), (0,1), (-1,0)] # direction for snakes novements
-    SNAKE_HEAD_IMAGE = "SNAKE_HEAD.png"
-    SNAKE_TAIL_IMAGE = "SNAKE_TAIL.png"
+    
     def __init__ (self,screen, x, y, direction = UP):
-        self._x = 400
-        self._y = 300
+        self._x = x
+        self._y = y
         self._direction = direction
         self._screen = screen
         self._color = WHITE
@@ -103,15 +96,15 @@ class Snake():
         self.snake_size = 20
         self._move_speed = 0.15
         self._seg_list = []
-        self._head_image = ImageList(SNAKE_HEAD, TILESIZE_X, TILESIZE_Y)# the tilesize is required because its scales the image
-        self._tail_image = ImageList(SNAKE_TAIL, TILESIZE_X, TILESIZE_Y)
+        self._head_image = ImageList("snake_head.png", TILESIZE_X, TILESIZE_Y)# the tilesize is required because its scales the image
+        self._tail_image = ImageList("snake_tail.png", TILESIZE_X, TILESIZE_Y)
+        
 
 
     # this is the definitoin 
     def reset(self):
         self._seg_list = [] # snakes head into a list
-        i =1
-        for i in range (self._length):
+        for i in range (self._length): # length of the snake repeats
             component_x = self._x - (i * Snake.VECTOR[self._direction[0]], TILESIZE_X) # draws from the list
             component_y = self._y -(i * Snake.VECTOR[self._direction[1]], TILESIZE_Y)
             img_show = self._head_image if i == 0 else self._tail_image
@@ -121,14 +114,26 @@ class Snake():
             # the sprite seg list is empty so: 
             self._seg_list.append(sprite_show) #
 
-    def update_position (self):
-        # snake is to decide whether it will delete its tail
-        if not self._grow:
-            self._seg_list.clear() # deletes the tail 
-        
 
-        self._x +=Snake.VECTOR [self._direction] [0] * TILESIZE_X 
-        self._y +=Snake.VECTOR [self._direction] [1] * TILESIZE_X
+    def direction(self, changing_dir):
+        movements = {
+            Snake.UP: Snake.DOWN, # if its snake up, then snake down should be deactivated
+            Snake.DOWN: Snake.UP,
+            Snake.RIGHT: Snake.LEFT,
+            Snake.LEFT: Snake.RIGHT
+            }
+        if changing_dir != movements(self._direction): # if the movement is true
+             # if the movements are being checked, then the function is passed
+            self._direction = changing_dir
+
+    def next_position(self):
+       updated_x = self._seg_list[0].x +(Snake.VECTOR[self._direction][0] * TILESIZE_X)
+       updated_y = self._seg_list[0].y +(Snake.VECTOR[self._direction][1] * TILESIZE_Y)
+       respawned_head = MySprite(updated_x, updated_y, TILESIZE_X,TILESIZE_Y,self._head_image, self._screen)
+       self._seg_list.insert(0, respawned_head)
+
+   
+        
        
 
         self._seg_list.insert(MySprite("x"), ("y"), ("direction"))
@@ -138,9 +143,6 @@ class Snake():
     def draw(self):
         for segment in self._seg_list:
             segment.draw()
-
-
-    
 
 
 class Menu():
@@ -154,18 +156,6 @@ class Menu():
         self.scale_x = SCREEN_WIDTH / SCALED_WIDTH
         self.scale_y = SCREEN_HEIGHT / SCALED_HEIGHT
         # images to be scaled to screen 
-        self.scale_factory_x = int(FACTORY_IMAGE_WIDTH * self.scale_x)
-        self.scale_factory_y = int(FACTORY_IMAGE_HEIGHT * self.scale_y)
-        # this produces the image, coded form image list
-        # this image has dimensions and color
-        self.test_image_factory = (FACTORY_IMAGE_WIDTH, FACTORY_IMAGE_HEIGHT, FACTORY_IMAGE_COLOR)        
-        # coordinates of the defined sprite that will be taken from mysprite
-        # the test image will extract this from the image list 
-        self.sprite = MySprite(int((SCREEN_WIDTH // 2 - FACTORY_IMAGE_WIDTH // 2)), # fixed the bracketed error
-                               int(SCREEN_HEIGHT // 2 - FACTORY_IMAGE_HEIGHT // 4), 
-                               int(FACTORY_IMAGE_WIDTH * self.scale_x), 
-                               int(FACTORY_IMAGE_HEIGHT * self.scale_y), self.test_image_factory, screen)
-        
 
         # list for main buttons
         
@@ -258,13 +248,9 @@ class Menu():
                 button.mouse_move(mx, my)
         else:
             self.back_button.mouse_move(mx, my)
-            # If hovered over "start", the button draws
-            if self.state == "start":
-                self.sprite.animate() # mysprite updated using the animate function
 
-    # definiton for 
+    # definiton for drawing the buttons
     def draw(self, surface):
-        # surface.fill controls the canvas of the screen 
         surface.fill(BLACK) #paints the entire canvas in Black
         scaled_font = int(67 * self.scale_y)
         current_font = pygame.font.SysFont("Sans New Roman", max(12, scaled_font))
@@ -309,20 +295,36 @@ def message(msg, text_colour):
         screen.blit(text, text_box)
 
 
+
+
 # The main loop for the game
 menu = Menu()
 Snake_sprite = None
 
-running = True
-while running:
+game_run = True
+while game_run:
     for event in pygame.event.get():
         # if the close box is clicked on the window
         if event.type == pygame.QUIT:
             # the running control is false
-            running = False
+            game_run = False
         elif event.type == pygame.VIDEORESIZE:
            # been defined in previous definition
            menu.mouse_click(event.w, event.h)
+
+        if menu.state == "start" and Snake_sprite is not None: # if start button is pressed and the snake instance is true
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    Snake_sprite.direction(Snake.UP) # if the user is using
+                elif event.key == pygame.K_DOWN:
+                    Snake_sprite.direction(Snake.DOWN)
+                elif event.key == pygame.K_RIGHT:
+                    Snake_sprite.direction(Snake.RIGHT)
+                elif event.key == pygame.K_LEFT:
+                    Snake_sprite.direction(Snake.LEFT)
+
+
+
         menu.handle_events(event)
     # system loop tick components in order are executed
     menu.update()
@@ -331,8 +333,8 @@ while running:
 
     message("GAME OVER", BLACK) # calls back to the message definition  
     pygame.display.flip()
-    # screen to to 80 fps
-    clock.tick(80)
+    # screen to to 50 fps
+    clock.tick(50)
 
 # signals the end of all pygame modules
 
