@@ -74,6 +74,8 @@ clock = pygame.time.Clock()
 #since Imagelist and Mysprite are already defined, in multiple other files
 # Menu class starts here
 
+# food class
+#class Token():
 
 # snake class 
 class Snake():
@@ -94,23 +96,24 @@ class Snake():
         self._color = WHITE
         self._length = 3
         self.snake_size = 20
-        self._move_speed = 0.15
+        self._move_speed = 0.10
         self._seg_list = []
-        self._head_image = ImageList("snake_head.png", TILESIZE_X, TILESIZE_Y)# the tilesize is required because its scales the image
-        self._tail_image = ImageList("snake_tail.png", TILESIZE_X, TILESIZE_Y)
-        
+        self._head_image = ImageList("images/snake_head", TILESIZE_X, TILESIZE_Y, WHITE)# the tilesize is required because its scales the image
+        self._tail_image = ImageList("image/snake_tail", TILESIZE_X, TILESIZE_Y, WHITE)
+        self._next_move = time.time() + self._move_speed # using the pythons time function into the speed
+        self.reset()
 
 
     # this is the definitoin 
     def reset(self):
         self._seg_list = [] # snakes head into a list
         for i in range (self._length): # length of the snake repeats
-            component_x = self._x - (i * Snake.VECTOR[self._direction[0]], TILESIZE_X) # draws from the list
-            component_y = self._y -(i * Snake.VECTOR[self._direction[1]], TILESIZE_Y)
+            component_x = self._x - (i * Snake.VECTOR[self._direction][0] * TILESIZE_X) # grabs the vector value up (0)
+            component_y = self._y -(i * Snake.VECTOR[self._direction][1] * TILESIZE_Y) # grabs the vector value up (-1)
             img_show = self._head_image if i == 0 else self._tail_image
             # this draws the tail and head of the snake using the scaling
             # a "mysprite" object
-            sprite_show = MySprite(self._screen, component_x, component_y, TILESIZE_X, TILESIZE_Y, img_show) # screen is passed first liek its in the innit function
+            sprite_show = MySprite(component_x, component_y, TILESIZE_X, TILESIZE_Y, img_show,self._screen) # screen is passed first liek its in the innit function
             # the sprite seg list is empty so: 
             self._seg_list.append(sprite_show) #
 
@@ -118,31 +121,43 @@ class Snake():
     def direction(self, changing_dir):
         movements = {
             Snake.UP: Snake.DOWN, # if its snake up, then snake down should be deactivated
-            Snake.DOWN: Snake.UP,
+            Snake.DOWN: Snake.UP, # 
             Snake.RIGHT: Snake.LEFT,
             Snake.LEFT: Snake.RIGHT
             }
-        if changing_dir != movements(self._direction): # if the movement is true
+        if changing_dir != movements[self._direction]: # if the movement is true
              # if the movements are being checked, then the function is passed
             self._direction = changing_dir
 
-    def next_position(self):
-       updated_x = self._seg_list[0].x +(Snake.VECTOR[self._direction][0] * TILESIZE_X)
-       updated_y = self._seg_list[0].y +(Snake.VECTOR[self._direction][1] * TILESIZE_Y)
-       respawned_head = MySprite(updated_x, updated_y, TILESIZE_X,TILESIZE_Y,self._head_image, self._screen)
-       self._seg_list.insert(0, respawned_head)
+    def update_position(self):
+     if time.time() > self._next_move:
+            self._next_move = time.time() + self._move_speed
+            updated_x = self._seg_list[0].x +(Snake.VECTOR[self._direction][0] * TILESIZE_X) # snake taken from the list is drawn to the vector notation
+            updated_y = self._seg_list[0].y +(Snake.VECTOR[self._direction][1] * TILESIZE_Y) 
+            respawned_head = MySprite(updated_x, updated_y, TILESIZE_X,TILESIZE_Y,self._head_image, self._screen) # the updated head
+            self._seg_list.insert(0, respawned_head)
 
-   
-        
-       
+       # removes the tail 
+            if len(self._seg_list) > 1:
+                self._seg_list[1]._images =self._tail_image
+            if len(self._seg_list) > self._length:
+                self._seg_list.pop()
+          
+    def check_collision(self): #definition that functions for if/when the snake hits the wall
+        if not self._seg_list:
+            return False
+        snake_head = self._seg_list[0]
+        # if the coordinates of the snakes head exceed the value of the screens width of s
+        if snake_head.x < 0 or snake_head.x>=SCREEN_WIDTH or snake_head.y<0 or snake_head.y>=SCREEN_HEIGHT:
+            return True
 
-        self._seg_list.insert(MySprite("x"), ("y"), ("direction"))
-
-    
-
+        for component in self._seg_list[1:]:
+            if snake_head.x == component.x and snake_head.y == component.y:
+                return True
+        return False
     def draw(self):
-        for segment in self._seg_list:
-            segment.draw()
+        for component in self._seg_list:
+            component.draw()
 
 
 class Menu():
@@ -198,9 +213,9 @@ class Menu():
         # A back button for the sub-screens
         
         Escape_x = int(SCREEN_WIDTH - (BACK_BUTTON_WIDTH * self.scale_x) - (BACK_BUTTON_PADDING * self.scale_x))
-        Escape_y = int(BUTTON_Y * self.scale_y), 
+        Escape_y = int(BUTTON_Y * self.scale_y) 
 
-
+        # values for the back button:
         self.back_button = Button("ESC", Escape_x, Escape_y,
         int(BACK_BUTTON_WIDTH * self.scale_x), 
         int(BACK_BUTTON_HEIGHT * self.scale_y))
@@ -209,13 +224,12 @@ class Menu():
         self.back_button.action = lambda: self.set_state("menu")
         # returns to menu
 
-
     def set_state(self, new_state):
         # updates the current screen variable when called by either button press
         self.state = new_state
         if new_state == "start":
                 global Snake_sprite
-                Snake_sprite = Snake(screen, 400, 300)
+                Snake_sprite = Snake(screen, 400, 300) # part of the screen where the snake will appear
 
     # definition handles incoming inputs, in this case if/when the buttons are pressed
     def handle_events(self, event):
@@ -247,7 +261,8 @@ class Menu():
             for button in self.buttons:
                 button.mouse_move(mx, my)
         else:
-            self.back_button.mouse_move(mx, my)
+            self.back_button.mouse_move(mx, my) # so that the escape button can be progressed.
+        
 
     # definiton for drawing the buttons
     def draw(self, surface):
@@ -291,10 +306,8 @@ class Menu():
 # not apart of any other 
 def message(msg, text_colour):
         text = MESSAGE_FONT.render(msg, True, text_colour)
-        text_box = text.get_rect(center=(500, 360))
+        text_box = text.get_rect(center=(300, 360))
         screen.blit(text, text_box)
-
-
 
 
 # The main loop for the game
@@ -315,7 +328,7 @@ while game_run:
         if menu.state == "start" and Snake_sprite is not None: # if start button is pressed and the snake instance is true
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    Snake_sprite.direction(Snake.UP) # if the user is using
+                    Snake_sprite.direction(Snake.UP) # if the user has pressed up, move the snake up
                 elif event.key == pygame.K_DOWN:
                     Snake_sprite.direction(Snake.DOWN)
                 elif event.key == pygame.K_RIGHT:
@@ -329,9 +342,18 @@ while game_run:
     # system loop tick components in order are executed
     menu.update()
     menu.draw(screen)
-    
 
-    message("GAME OVER", BLACK) # calls back to the message definition  
+    if menu.state == "start" and Snake_sprite is not None:
+        Snake_sprite.update_position()
+        Snake_sprite.draw()
+        menu.back_button.draw(screen) # Keep button drawn over the snake
+        
+        if Snake_sprite.check_collision(): # if snake hits the wall
+            message("GAME OVER", MAROON) # calls back the definition and colors it as maroon
+            pygame.display.flip()
+            time.sleep(2) # time taken to return to Menu screen and exit
+            menu.set_state("menu") # returns to main menu
+
     pygame.display.flip()
     # screen to to 50 fps
     clock.tick(50)
@@ -341,8 +363,6 @@ while game_run:
 pygame.quit()
 # ensures that the game closes down without freezzing 
 sys.exit()
-
-
 
 
     
