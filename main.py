@@ -13,8 +13,8 @@ from button import Button # class extracted from the other file
 pygame.init()
 
 # important logistical values for my screen 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) #avoids the usage of magic numbers
 
@@ -43,7 +43,7 @@ BACK_BUTTON_PADDING = 20
 
 MENU_FONT_SIZE = 100
 
-MESSAGE_FONT = pygame.font.SysFont("Arial", 50)
+MESSAGE_FONT = pygame.font.SysFont(None, 50)
 
 SETTINGS_SCALE_INTEGER = 460
 HIGH_SCORE_SCALE_INTEGER = 380
@@ -53,8 +53,10 @@ DRAWN_HIGH_SCORE_SCALE_INTEGERR = 25
 DRAWN_SETTING_SCALE_INTEGERR = 25
 # convert alpha allows for the image to be bplaced upon much easier
 CHECKERBOARD = pygame.image.load("CHECKERBOARD.png").convert_alpha()
-TILESIZE_X = 16 # in relation to make the snake move
-TILESIZE_Y = 16
+MENU_SNAKE = pygame.image.load("MENU_SNAKE.png") # will be on the main menu
+MENU_SNAKE_2 = pygame.image.load("MENU_SNAKE_2.png") # will also be on the main menu
+TILESIZE_X = 20 # in relation to make the snake move
+TILESIZE_Y = 20
 
 # gameplay caption:
 pygame.display.set_caption("SNAKED, By Tej Desai") 
@@ -75,7 +77,21 @@ clock = pygame.time.Clock()
 # Menu class starts here
 
 # food class
-#class Token():
+class Token():
+    #blueprint (variables):
+    def __init__(self, screen, TILESIZE_X, TILESIZE_Y ):
+        self._x = TILESIZE_X
+        self._y = TILESIZE_Y
+        self._token = ImageList("TOKEN", self._x, self._y, GOLD) # to draw my token image, similar to the snakes imagelist object
+        self.random_spawn()
+
+    def random_spawn():
+        
+    def draw():
+        if self._token:
+            self._token.draw()
+
+
 
 # snake class 
 class Snake():
@@ -95,12 +111,11 @@ class Snake():
         self._screen = screen
         self._color = WHITE
         self._length = 3
-        self.snake_size = 20
-        self._move_speed = 0.10
+        self._move_speed = 0.10 # the initial speed at which the snake will move
         self._seg_list = []
-        self._head_image = ImageList("images/snake_head", TILESIZE_X, TILESIZE_Y, WHITE)# the tilesize is required because its scales the image
-        self._tail_image = ImageList("image/snake_tail", TILESIZE_X, TILESIZE_Y, WHITE)
-        self._next_move = time.time() + self._move_speed # using the pythons time function into the speed
+        self._head_image = ImageList("snake_head", TILESIZE_X, TILESIZE_Y, WHITE)# the tilesize is required because its scales the image
+        self._tail_image = ImageList("snake_tail", TILESIZE_X, TILESIZE_Y, WHITE)
+        self._next_move = time.time() + self._move_speed 
         self.reset()
 
 
@@ -115,7 +130,7 @@ class Snake():
             # a "mysprite" object
             sprite_show = MySprite(component_x, component_y, TILESIZE_X, TILESIZE_Y, img_show,self._screen) # screen is passed first liek its in the innit function
             # the sprite seg list is empty so: 
-            self._seg_list.append(sprite_show) #
+            self._seg_list.append(sprite_show) # adds snake sprite to the list
 
 
     def direction(self, changing_dir):
@@ -149,11 +164,11 @@ class Snake():
         snake_head = self._seg_list[0]
         # if the coordinates of the snakes head exceed the value of the screens width of s
         if snake_head.x < 0 or snake_head.x>=SCREEN_WIDTH or snake_head.y<0 or snake_head.y>=SCREEN_HEIGHT:
-            return True
+            return True # checks whether the snake heads horizontal and vertical positions are the more or equal to my screens height and width
 
         for component in self._seg_list[1:]:
             if snake_head.x == component.x and snake_head.y == component.y:
-                return True
+                return True # if the previous value above is true, then the update postion is also true
         return False
     def draw(self):
         for component in self._seg_list:
@@ -166,7 +181,7 @@ class Menu():
         # tracker variable defined in order to spearate the main and sub menu
         self.state = "menu"
         # font for the title surf defined
-        self.font = pygame.font.SysFont("Sans New Roman", MENU_FONT_SIZE)
+        self.font = pygame.font.SysFont("Arial", MENU_FONT_SIZE)
         # scaled code
         self.scale_x = SCREEN_WIDTH / SCALED_WIDTH
         self.scale_y = SCREEN_HEIGHT / SCALED_HEIGHT
@@ -206,7 +221,7 @@ class Menu():
         settings_button.action = lambda: self.set_state("settings")
 
         # list of buttons to be redifined
-        self.buttons = [ start_button, high_score_button, settings_button]
+        self.buttons = [start_button, high_score_button, settings_button]
       
         # The back button, for returning back to home menu
         # adds the width 
@@ -241,14 +256,13 @@ class Menu():
         else:
             self.back_button.mouse_click(event)
 
+    # this definition uses the mouse to scale the window
     def mouse_click(self, w, h):
         global screen, SCREEN_WIDTH, SCREEN_HEIGHT
         # variables defined to letters
         SCREEN_WIDTH, SCREEN_HEIGHT = w, h
-        # screen displays new scaled width of the code
         self.scale_x = SCREEN_WIDTH / SCALED_WIDTH
         self.scale_y = SCREEN_HEIGHT / SCALED_HEIGHT
-        
         self.__init__()
 
  # beggining of running the calculations
@@ -268,13 +282,15 @@ class Menu():
     def draw(self, surface):
         surface.fill(BLACK) #paints the entire canvas in Black
         scaled_font = int(67 * self.scale_y)
-        current_font = pygame.font.SysFont("Sans New Roman", max(12, scaled_font))
+        current_font = pygame.font.SysFont(None, max(12, scaled_font))
         # font/blit loop
         # If the main menu has been opened
         if self.state == "menu":
             # this will be the title that has been drawn above gameplay 
             # render means to put the text on to the surface of the screen 
             game_title = current_font.render("SNAKED", True, NAVY_BLUE)
+            screen.blit(MENU_SNAKE, (400,500)) # draws this snake on the right hand side of the screen
+            screen.blit(MENU_SNAKE, (500, 600))
             # "screen.blit" copies the rendered text onto the center of the screen
             surface.blit(game_title, (SCREEN_WIDTH // 2 - game_title.get_width() // 2, int(100 * self.scale_y))) #screen width divided by two
 
@@ -304,15 +320,23 @@ class Menu():
 
 # this is the definition for the message that will appear when the user dies
 # not apart of any other 
-def message(msg, text_colour):
-        text = MESSAGE_FONT.render(msg, True, text_colour)
-        text_box = text.get_rect(center=(300, 360))
+def message(msg, text_colour, back_ground_colour):
+        text = MESSAGE_FONT.render(msg, True, text_colour, back_ground_colour)
+        text_box = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT//2))
         screen.blit(text, text_box)
+
+def score_calculator(msg, score_text_color, back_ground_color): # definition logics defined
+        score_text = MESSAGE_FONT.render(msg, True, score_text_color, back_ground_color)
+        score_text_box = score_text.get_rect(center=(40, 60))
+        screen.blit(score_text, score_text_box)
 
 
 # The main loop for the game
-menu = Menu()
+
+main_menu = Menu()
 Snake_sprite = None
+Token_sprite = None
+
 
 game_run = True
 while game_run:
@@ -322,50 +346,52 @@ while game_run:
             # the running control is false
             game_run = False
         elif event.type == pygame.VIDEORESIZE:
-           # been defined in previous definition
-           menu.mouse_click(event.w, event.h)
+            
+            main_menu.mouse_click(event.w, event.h)
 
-        if menu.state == "start" and Snake_sprite is not None: # if start button is pressed and the snake instance is true
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    Snake_sprite.direction(Snake.UP) # if the user has pressed up, move the snake up
-                elif event.key == pygame.K_DOWN:
-                    Snake_sprite.direction(Snake.DOWN)
-                elif event.key == pygame.K_RIGHT:
-                    Snake_sprite.direction(Snake.RIGHT)
-                elif event.key == pygame.K_LEFT:
-                    Snake_sprite.direction(Snake.LEFT)
+            if main_menu.state == "start" and Snake_sprite is not None: # if start button is pressed and the snake instance is true
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        Snake_sprite.direction(Snake.UP) # if the user has pressed up, move the snake up
+                    elif event.key == pygame.K_DOWN:
+                        Snake_sprite.direction(Snake.DOWN)
+                    elif event.key == pygame.K_RIGHT:
+                        Snake_sprite.direction(Snake.RIGHT)
+                    elif event.key == pygame.K_LEFT:
+                        Snake_sprite.direction(Snake.LEFT)
 
 
 
-        menu.handle_events(event)
-    # system loop tick components in order are executed
-    menu.update()
-    menu.draw(screen)
+            main_menu.handle_events(event)
+        # system loop tick components in order are executed
+        main_menu.update()
+        main_menu.draw(screen)
 
-    if menu.state == "start" and Snake_sprite is not None:
-        Snake_sprite.update_position()
-        Snake_sprite.draw()
-        menu.back_button.draw(screen) # Keep button drawn over the snake
-        
-        if Snake_sprite.check_collision(): # if snake hits the wall
-            message("GAME OVER", MAROON) # calls back the definition and colors it as maroon
-            pygame.display.flip()
-            time.sleep(2) # time taken to return to Menu screen and exit
-            menu.set_state("menu") # returns to main menu
+        if main_menu.state == "start" and Snake_sprite is not None:
+            score_calculator("Current Score:", MAROON, BLACK)
+            Snake_sprite.update_position()
+            Snake_sprite.draw()
+            Token_sprite.draw()
+            main_menu.back_button.draw(screen) # Keep button drawn over the snake
+            
+            if Snake_sprite.check_collision(): # if snake hits the wall
+                message("GAME OVER", MAROON, BLACK) # calls back the definition and colors it as maroon
+                pygame.display.flip()
+                time.sleep(2) # time taken to return to Menu screen and exit
+                main_menu.set_state("menu") # returns to main menu
 
-    pygame.display.flip()
-    # screen to to 50 fps
-    clock.tick(50)
+        pygame.display.flip()
+        # screen to to 50 fps
+        clock.tick(50)
 
-# signals the end of all pygame modules
+    # signals the end of all pygame modules
 
-pygame.quit()
-# ensures that the game closes down without freezzing 
-sys.exit()
+    pygame.quit()
+    # ensures that the game closes down without freezzing 
+    sys.exit()
+
+ 
 
 
     
     
-    
-

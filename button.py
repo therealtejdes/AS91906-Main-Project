@@ -7,7 +7,7 @@ class Button():
     MIN_BUTTON_H = 10
     CLICK_OFFSET = 5
 
-    DEFAULT_FONT = 'Sans New Roman'  
+    DEFAULT_FONT = 'Arial' # the font of my buttons  
     DEFAULT_FONT_SIZE = 40
 
     FONT_COLOR = MAROON
@@ -18,6 +18,10 @@ class Button():
     # button innit function
     def __init__(self, text, x, y, w, h, callback=None):
         # init internal variables
+        self._x = x
+        self._y = y
+        self._w = w
+        self._h = h
         self._mouse_over = False
         self._button_down = False
         self._disabled = False  
@@ -32,8 +36,6 @@ class Button():
         else:
             self._h = h
             
-        self._x = x
-        self._y = y
         self._text = text
         # color coded definitions effected
         self._font_color = Button.FONT_COLOR
@@ -74,7 +76,7 @@ class Button():
                     if self._action is not None:
                         self._action() # im' clicked
                     else:
-                        print("button", self._text, "has no function set")
+                        print("button", self._text, "has no function set") # in the case if my button isn't working 
                 self._button_down = False
 
     def set_action(self, action_function):
