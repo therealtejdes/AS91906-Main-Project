@@ -1,19 +1,23 @@
 import pygame
 MID_NIGHT_BLUE =(0, 24, 50) # for the button background colors
 MAROON = (128, 0, 0) # for the button text and border colors.
-
+SCALED_BUTTON_FONT = 0.5
+BUTTON_RADIUS = 3
+BUTTON_TEXT_RENDER = 2
+BUTTON_FONT_SIZE = 12
 class Button():
     MIN_BUTTON_W = 10
     MIN_BUTTON_H = 10
     CLICK_OFFSET = 5
 
-    DEFAULT_FONT = 'Arial' # the font of my buttons  
+    DEFAULT_FONT = 'Sans New Roman' # the font of my buttons  
     DEFAULT_FONT_SIZE = 40
 
     FONT_COLOR = MAROON
     HIGHLIGHT_COLOR = pygame.Color('darkgrey')
     BG_COLOR = MID_NIGHT_BLUE
     BORDER_COLOR = (MAROON)
+
 
     # button innit function
     def __init__(self, text, x, y, w, h, callback=None):
@@ -87,11 +91,11 @@ class Button():
 
     def draw(self, screen):
         # buttons that are scaled 
-        scaled_font_size = int(self._h * 0.5) 
+        scaled_font_size = int(self._h * SCALED_BUTTON_FONT) 
         # the font of the buttons are directly proportionally scaled to the buttons
-        self._font = pygame.font.SysFont(Button.DEFAULT_FONT, max(12, scaled_font_size))
+        self._font = pygame.font.SysFont(Button.DEFAULT_FONT, max(BUTTON_FONT_SIZE, scaled_font_size))
         # the radius of the buttons, order for them to be rounded
-        radius = int(self._h * 3)
+        radius = int(self._h * BUTTON_RADIUS)
         # draws the rectangle
         pygame.draw.rect(screen, self._border_color, self.get_rect(), border_radius=radius)
         inner_rad= pygame.Rect(self._x + self._border, self._y + self._border, self._w - self._border*2, self._h - self._border*2)
@@ -113,7 +117,7 @@ class Button():
         rendered_text = self._font.render(self._text, True, color, self._bg_color)
         # gets the rectangle for this surface
         rendered_text_rect = rendered_text.get_rect() 
-        rendered_text_rect.center = (self._x + self._w / 2 + offset, self._y + self._h / 2 + offset)
+        rendered_text_rect.center = (self._x + self._w / BUTTON_TEXT_RENDER + offset, self._y + self._h / BUTTON_TEXT_RENDER + offset)
         # tells where the button is to be drawn 
         screen.blit(rendered_text, rendered_text_rect)
 
