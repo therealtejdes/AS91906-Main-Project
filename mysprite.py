@@ -13,10 +13,10 @@ class MySprite():
 
 
         valid = True
+        self._x = x #Classifies x as only x
         self._y = y #Classifies Y as only Y
         self._w = w #Classifies w as only w
         self._h = h #Classifies h as only h
-        self._x = x #Classifies x as only x
         self._xd=0
         self._yd=0
 
@@ -31,9 +31,6 @@ class MySprite():
         self._repeat= False
         self._next_move = time.time() + self._delay
         self._move_delay = 0
-
-    def get_rect(self):
-        return pygame.Rect(self._x,self._y,self._w, self._h)
 
 
     def get_x(self):
@@ -69,7 +66,7 @@ class MySprite():
         if not x_delta is None:
             self._xd = x_delta
         if not y_delta is None:
-            self.yd = y_delta
+            self._yd = y_delta
         if not delay is None:
             self._move_delay = delay
             self._next_move = time.time() + delay
@@ -128,7 +125,7 @@ class MySprite():
 
         
     def get_rect(self):
-        return pygame.Rect(self._x, self._y, self._h, self._w)
+        return pygame.Rect(self._x, self._y, self._w, self._h)
        
     def draw(self):
         self._screen.blit(self._images.images[self._current_frame], self.get_rect()) 
@@ -193,8 +190,4 @@ if __name__ == "__main__":
 
         pygame.display.flip()
 
-
-    pygame.quit()
-    quit()
-    # This allows for the window to be manually exited.
-    
+  

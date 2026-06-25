@@ -13,15 +13,15 @@ from button import Button # class extracted from the other file
 pygame.init()
 
 # important logistical values for my screen 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+ARENA_SCREEN_WIDTH = 800
+ARENA_SCREEN_HEIGHT = 600
 # images used for the game
 SNAKE_HEAD = "images\\SNAKE_HEAD"
 SNAKE_TAIL = "images\\SNAKE_TAIL"
 TOKEN = "images\\TOKEN"
 MENU_SNAKE = "images\\MENU_SNAKE"
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) #avoids the usage of magic numbers
+screen = pygame.display.set_mode((ARENA_SCREEN_WIDTH, ARENA_SCREEN_HEIGHT), pygame.RESIZABLE) #avoids the usage of magic numbers
 # snakes starting postion
 SNAKES_STARTING_X_POSITION = 360
 SNAKES_STARTING_Y_POSITION = 320
@@ -32,7 +32,7 @@ SCALED_HEIGHT = 600
 # tilesize for the snakes head, tail and token
 TILESIZE_X = 40
 TILESIZE_Y = 40
-TOKEN_HEIGHT = SCREEN_HEIGHT - TILESIZE_Y # SCREEN width - score calculator height - back button height
+TOKEN_HEIGHT = ARENA_SCREEN_HEIGHT - TILESIZE_Y # SCREEN width - score calculator height - back button height
 
 # Values for my buttons
 # These values remain constant for all buttons
@@ -87,7 +87,10 @@ with open ("mysprite.py") as f:
     for x in f:
         print(x) # prints the entire mysprite code
 
-#json file reading/writing
+# reading and writing files for button code
+with open ("button.py") as f:
+    for x in f:
+        print(x) # prints the button class
 
 
 # Token class
@@ -106,7 +109,7 @@ class Token():
 
     # definition in order to draw my token
     def random_spawn(self):
-        Colums = SCREEN_WIDTH // self._w 
+        Colums = ARENA_SCREEN_WIDTH // self._w 
         # makes sure that the token doesn't get in the way of the the score caluclator
         # and the back button 
         Rows = TOKEN_HEIGHT // self._h
@@ -204,8 +207,8 @@ class Snake():
         snake_head = self._seg_list[0]
         # checks whther the snake heads' horizontal and vertical postions are more or equal to screen x and y
         # an if they are less than zero
-        if snake_head.x < 0 or snake_head.x >= SCREEN_WIDTH \
-        or snake_head.y < 0 or snake_head.y >= SCREEN_HEIGHT:
+        if snake_head.x < 0 or snake_head.x >= ARENA_SCREEN_WIDTH \
+        or snake_head.y < 0 or snake_head.y >= ARENA_SCREEN_HEIGHT:
             return True
 
         for component in self._seg_list[1:]:
@@ -231,8 +234,8 @@ class Menu():
         self.state = "menu"
         self.font = pygame.font.SysFont("Sans New Roman", MENU_FONT_SIZE)
         # scaling dimensions
-        self.scale_x = SCREEN_WIDTH / SCALED_WIDTH # = 1
-        self.scale_y = SCREEN_HEIGHT / SCALED_HEIGHT # = 1
+        self.scale_x = ARENA_SCREEN_WIDTH / SCALED_WIDTH # = 1
+        self.scale_y = ARENA_SCREEN_HEIGHT / SCALED_HEIGHT # = 1
 
         # main buttons defined using the button class.
         # scaled to size as
@@ -256,7 +259,7 @@ class Menu():
 
         # back button is moved to top right of the screen and simultaneously scaled.
 
-        Escape_x = int(SCREEN_WIDTH - (BACK_BUTTON_WIDTH * self.scale_x) - (BACK_BUTTON_PADDING * self.scale_x))
+        Escape_x = int(ARENA_SCREEN_WIDTH - (BACK_BUTTON_WIDTH * self.scale_x) - (BACK_BUTTON_PADDING * self.scale_x))
         Escape_y = int(BUTTON_Y * self.scale_y) 
 
         self.back_button = Button("ESC", Escape_x, Escape_y,
@@ -293,10 +296,10 @@ class Menu():
 
     # definition for the mouse to scale window
     def mouse_click(self, w, h):
-        global screen, SCREEN_WIDTH, SCREEN_HEIGHT
-        SCREEN_WIDTH, SCREEN_HEIGHT = w, h
-        self.scale_x = SCREEN_WIDTH / SCALED_WIDTH
-        self.scale_y = SCREEN_HEIGHT / SCALED_HEIGHT
+        global screen, ARENA_SCREEN_WIDTH, ARENA_SCREEN_HEIGHT
+        ARENA_SCREEN_WIDTH, ARENA_SCREEN_HEIGHT = w, h
+        self.scale_x = ARENA_SCREEN_WIDTH / SCALED_WIDTH
+        self.scale_y = ARENA_SCREEN_HEIGHT / SCALED_HEIGHT
         self.__init__()
 
     # definition to draw the buttons
@@ -308,7 +311,7 @@ class Menu():
         # done through an if and else statement 
         if self.state == "menu":
             game_title = menu_text_font.render("SNAKED", True, NAVY_BLUE)
-            surface.blit(game_title, (SCREEN_WIDTH // 2 - game_title.get_width() // 2, int(DRAWN_MENU_SCALE_INTEGER * self.scale_y)))
+            surface.blit(game_title, (ARENA_SCREEN_WIDTH // 2 - game_title.get_width() // 2, int(DRAWN_MENU_SCALE_INTEGER * self.scale_y)))
             
 
             for button in self.buttons:
@@ -323,33 +326,33 @@ class Menu():
             screen.fill(WINE_RED)
             # the drawn lines of text that displayed on the screen
             instructions_title_font = text_font.render("INSTRUCTIONS:", True, AIR_FORCE_BLUE)
-            surface.blit(instructions_title_font, (SCREEN_WIDTH // 3 - instructions_title_font.get_width() // 3, int(DRAWN_INSTRUCTION_SCALE_INTEGER * self.scale_y)))
+            surface.blit(instructions_title_font, (ARENA_SCREEN_WIDTH // 3 - instructions_title_font.get_width() // 3, int(DRAWN_INSTRUCTION_SCALE_INTEGER * self.scale_y)))
             welcome_font = text_font.render("WELCOME TO SNAKED!", True, AIR_FORCE_BLUE)
-            surface.blit(welcome_font, (SCREEN_WIDTH//3 - welcome_font.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER + 150)))
+            surface.blit(welcome_font, (ARENA_SCREEN_WIDTH//3 - welcome_font.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER + 150)))
             arrow_line = text_font.render("Use the arrow", True, AIR_FORCE_BLUE)
-            surface.blit(arrow_line, (SCREEN_WIDTH//3 - arrow_line.get_width()//4, int(DRAWN_INSTRUCTION_SCALE_INTEGER +300)))
+            surface.blit(arrow_line, (ARENA_SCREEN_WIDTH//3 - arrow_line.get_width()//4, int(DRAWN_INSTRUCTION_SCALE_INTEGER +300)))
             keys_line = text_font.render("keys to move snake", True, AIR_FORCE_BLUE)
-            surface.blit(keys_line, (SCREEN_WIDTH//3 - keys_line.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER +450)))
+            surface.blit(keys_line, (ARENA_SCREEN_WIDTH//3 - keys_line.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER +450)))
             points_line = text_font.render("Each token's worth 5 points", True, AIR_FORCE_BLUE)
-            surface.blit(points_line, (SCREEN_WIDTH//3 - points_line.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER +600)))
+            surface.blit(points_line, (ARENA_SCREEN_WIDTH//3 - points_line.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER +600)))
             caution_line = text_font.render("Hit the wall, you die!", True, AIR_FORCE_BLUE)
-            surface.blit(caution_line, (SCREEN_WIDTH//3 - caution_line.get_width()//3, int (DRAWN_INSTRUCTION_SCALE_INTEGER +750)))
+            surface.blit(caution_line, (ARENA_SCREEN_WIDTH//3 - caution_line.get_width()//3, int (DRAWN_INSTRUCTION_SCALE_INTEGER +750)))
             luck_line = text_font.render("GOOD LUCK GAMER!", True, AIR_FORCE_BLUE)
-            surface.blit(luck_line, (SCREEN_WIDTH//3 - luck_line.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER + 900)))
+            surface.blit(luck_line, (ARENA_SCREEN_WIDTH//3 - luck_line.get_width()//3, int(DRAWN_INSTRUCTION_SCALE_INTEGER + 900)))
 
             
             self.back_button.draw(surface)
 
 # definiton for my "Game Over" message
-def message(msg, text_colour, back_ground_colour):
-    text = MESSAGE_FONT.render(msg, True, text_colour, back_ground_colour)
-    text_box = text.get_rect(center=(SCREEN_WIDTH//2, SCALED_HEIGHT//2)) # so that the part is scaled
+def message(msg, text_colour):
+    text = MESSAGE_FONT.render(msg, True, text_colour)
+    text_box = text.get_rect(center=(ARENA_SCREEN_WIDTH//2, SCALED_HEIGHT//2)) # so that the part is scaled
     screen.blit(text, text_box) # draws the box
 
 # defintion for the "current score message"
 def score_calculator(msg, text_colour, back_ground_colour):
     text = MESSAGE_FONT.render(msg, True, text_colour, back_ground_colour)
-    text_box = text.get_rect(center=(SCREEN_WIDTH // 6, 30)) # Center top of gameplay area
+    text_box = text.get_rect(center=(ARENA_SCREEN_WIDTH // 6, 30)) # Center top of gameplay area
     screen.blit(text, text_box) # draws the box
 
 # classes instanziation
@@ -407,8 +410,8 @@ while game_run:
         main_menu.back_button.draw(screen) 
         
         if Snake_sprite.wall_and_self_collision(): 
-            screen.fill(WINE_RED)
-            message("GAME OVER", BLACK, WHITE) # appears in the middle of the screen
+            screen.fill(BLACK)
+            message("GAME OVER", WINE_RED) # appears in the middle of the screen
             pygame.display.flip()
             time.sleep(2) 
             main_menu.set_state("menu") 
