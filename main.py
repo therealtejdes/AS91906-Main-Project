@@ -148,8 +148,8 @@ class Snake():
         self._length = 2
         self._move_speed = 0.10 # the inital speed at which the snake will move. 
         self._seg_list = []
-        self._head_image = ImageList(SNAKE_HEAD, TILESIZE_X, TILESIZE_Y, GOLD) #will scale the image of the snakes head. 
-        self._tail_image = ImageList(SNAKE_TAIL, TILESIZE_X, TILESIZE_Y,GOLD)
+        self._head_image = ImageList(SNAKE_HEAD, TILESIZE_X, TILESIZE_Y) #will scale the image of the snakes head. 
+        self._tail_image = ImageList(SNAKE_TAIL, TILESIZE_X, TILESIZE_Y)
         self._next_move = time.time() + self._move_speed 
         self.reset()
 
@@ -259,7 +259,7 @@ class Menu():
 
         self.buttons = [self.start_button, self.instructions_button]
 
-        # back button is moved to top right of the screen and simultaneously scaled.
+        # back button is padded to top right of the screen and simultaneously scaled.
 
         Escape_x = int(ARENA_SCREEN_WIDTH - (BACK_BUTTON_WIDTH * self.scale_x) - (BACK_BUTTON_PADDING * self.scale_x))
         Escape_y = int(BUTTON_Y * self.scale_y) 
@@ -269,6 +269,8 @@ class Menu():
         int(BACK_BUTTON_HEIGHT * self.scale_y))
 
         self.back_button.action = lambda: self.set_state("menu")
+        #self._menu_snake = ImageList(MENU_SNAKE) 
+
 
     #
     def set_state(self, new_state):
@@ -314,7 +316,6 @@ class Menu():
         if self.state == "menu":
             game_title = menu_text_font.render("SNAKED", True, NAVY_BLUE)
             surface.blit(game_title, (ARENA_SCREEN_WIDTH // 2 - game_title.get_width() // 2, int(DRAWN_MENU_SCALE_INTEGER * self.scale_y)))
-            
 
             for button in self.buttons:
                 button.draw(surface) 
@@ -364,6 +365,7 @@ Token_sprite = None
 score_data = load_previous_score()
 previous_score = score_data.get("previous_score", 0)
 game_run = True
+# while loop for game
 while game_run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: # if user presses the exit button on the window 
