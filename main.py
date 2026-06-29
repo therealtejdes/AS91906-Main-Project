@@ -9,6 +9,24 @@ from imagelist import ImageList # class extracted from the other file
 from mysprite import MySprite # class extracted from other file 
 from button import Button # class extracted from the other file
 
+#definitions for JSON (Reading, writing, previous score) (json.loads)
+#definition to load the previous score
+def load_previous_score():
+    try: # directly references the external file 
+        with open("data.json", "r") as t:
+            # passes the string
+            return json.load(t)
+    # if the new score isn't loaded, the value remains at zero
+    except:
+        return {"previous_score": 0}
+
+# definition that saves the preivous score
+def save_previous_score(data):
+    # when the file is opened
+    with open("data.json", "w") as t:
+        # indentation to make the file easier to read
+        json.dump(data, t, indent=4) #converts the data into a string
+
 # all pygame modules have been activated 
 pygame.init()
 
@@ -75,22 +93,6 @@ WINE_RED = '#4E0707'
 clock = pygame.time.Clock()
 
 SCORE_CALCULATOR = 5
-
-# this reads and writes my entire imagelist 
-# code onto the python server
-with open("imagelist.py") as f:
-  for x in f:
-    print(x) # prints the whole code
-
-# this reads and writes my entire mysprite code
-with open ("mysprite.py") as f:
-    for x in f:
-        print(x) # prints the entire mysprite code
-
-# reading and writing files for button code
-with open ("button.py") as f:
-    for x in f:
-        print(x) # prints the button class
 
 
 # Token class
@@ -359,7 +361,8 @@ def score_calculator(msg, text_colour, back_ground_colour):
 main_menu = Menu()
 Snake_sprite = None
 Token_sprite = None
-
+score_data = load_previous_score()
+previous_score = score_data.get("previous_score", 0)
 game_run = True
 while game_run:
     for event in pygame.event.get():
@@ -410,11 +413,18 @@ while game_run:
         main_menu.back_button.draw(screen) 
         
         if Snake_sprite.wall_and_self_collision(): 
+            # resets the score file after the snake has died
+            score_display = f"SCORE: {score_tracker} PREVIOUS SCORE:{previous_score}"
             screen.fill(BLACK)
             message("GAME OVER", WINE_RED) # appears in the middle of the screen
             pygame.display.flip()
             time.sleep(2) 
             main_menu.set_state("menu") 
+            # howver if the current score exceeds the previous score
+            if score_tracker > previous_score:
+                previous_score = score_tracker
+                # saves the updated within the json file
+                save_previous_score({"previous_score": previous_score})
 
     pygame.display.flip()
 
