@@ -1,36 +1,44 @@
+"""This my pygame."""
 import pygame
 import time
 import json
 import sys
 import button
-import random # for the food 
-from os.path import exists #reading files
-from imagelist import ImageList # class extracted from the other file
-from mysprite import MySprite # class extracted from other file 
-from button import Button # class extracted from the other file
+import random  # for the food. 
+from os.path import exists  # reading files.
+from imagelist import ImageList  # class extracted from the other file.
+from mysprite import MySprite  # class extracted from other file. 
+from button import Button  # class extracted from the other file.
 
-#definitions for JSON (Reading, writing, previous score) (json.loads)
-#definition to load the previous score
+# definitions for JSON (Reading, writing, previous score) (json.loads).
+# definition to load the previous score.
 def load_previous_score():
-    try: # directly references the external file 
+
+
+    """function for loading previous score."""
+    try:  # directly references the external file. 
         with open("data.json", "r") as t:
-            # passes the string
+            # passes the string.
             return json.load(t)
-    # if the new score isn't loaded, the value remains at zero
+    # if the new score isn't loaded, the value remains at zero.
     except:
         return {"previous_score": 0}
 
+
 # definition that saves the preivous score
 def save_previous_score(data):
-    # when the file is opened
+
+
+    """function for saving previous score."""
+     # when the file is opened
     with open("data.json", "w") as t:
         # indentation to make the file easier to read
-        json.dump(data, t, indent=4) #converts the data into a string
+        json.dump(data, t, indent=4)  # converts the data into a string
 
-# all pygame modules have been activated 
+# all pygame modules have been activated. 
 pygame.init()
 
-# important logistical values for my screen 
+# important logistical values for my screen.
 ARENA_SCREEN_WIDTH = 800
 ARENA_SCREEN_HEIGHT = 600
 # images used for the game
@@ -39,7 +47,8 @@ SNAKE_TAIL = "images\\SNAKE_TAIL"
 TOKEN = "images\\TOKEN"
 MENU_SNAKE = "images\\MENU_SNAKE"
 
-screen = pygame.display.set_mode((ARENA_SCREEN_WIDTH, ARENA_SCREEN_HEIGHT), pygame.RESIZABLE) #avoids the usage of magic numbers
+screen = pygame.display.set_mode((ARENA_SCREEN_WIDTH, ARENA_SCREEN_HEIGHT),
+                                pygame.RESIZABLE) 
 # snakes starting postion
 SNAKES_STARTING_X_POSITION = 360
 SNAKES_STARTING_Y_POSITION = 320
@@ -50,7 +59,7 @@ SCALED_HEIGHT = 600
 # tilesize for the snakes head, tail and token
 TILESIZE_X = 40
 TILESIZE_Y = 40
-TOKEN_HEIGHT = ARENA_SCREEN_HEIGHT - TILESIZE_Y # SCREEN width - score calculator height - back button height
+TOKEN_HEIGHT = ARENA_SCREEN_HEIGHT - TILESIZE_Y  
 
 # Values for my buttons
 # These values remain constant for all buttons
@@ -97,7 +106,6 @@ SCORE_CALCULATOR = 5
 
 # Token class
 class Token():
-    # init definition for the Token
     def __init__(self, screen):
         self._screen = screen
         self._w = TILESIZE_X # scaling to the snakes tile size
@@ -109,15 +117,15 @@ class Token():
         self._token_sprite = None
         self.random_spawn() 
 
-    # definition in order to draw my token
+    
     def random_spawn(self):
-        Colums = ARENA_SCREEN_WIDTH // self._w 
+        colums = ARENA_SCREEN_WIDTH // self._w 
         # makes sure that the token doesn't get in the way of the the score caluclator
         # and the back button 
-        Rows = TOKEN_HEIGHT // self._h
+        rows = TOKEN_HEIGHT // self._h
         #grid functions 
-        grid_x = random.randint(3, max(2, Colums - 4)) 
-        grid_y = random.randint(3, max(2, Rows - 4)) 
+        grid_x = random.randint(3, max(2, colums - 4)) 
+        grid_y = random.randint(3, max(2, rows - 4)) 
         
         self._x = int(grid_x * self._w) 
         self._y = int(grid_y * self._h)
@@ -269,7 +277,6 @@ class Menu():
         int(BACK_BUTTON_HEIGHT * self.scale_y))
 
         self.back_button.action = lambda: self.set_state("menu")
-        #self._menu_snake = ImageList(MENU_SNAKE) 
 
 
     #
@@ -286,7 +293,7 @@ class Menu():
             for button in self.buttons:
                 button.mouse_click(event)
         else: 
-            self.back_button.mouse_click(event) #so that the user can use the back button to go to main
+            self.back_button.mouse_click(event) # so that the user can use the back button to go to main
 
     # definition for the mouse detections 
     def update(self): 
@@ -309,7 +316,7 @@ class Menu():
     # definition to draw the buttons
     def draw(self, surface):
         surface.fill(BLACK) # backgorund color
-        scaled_font = int(MENU_FONT_SIZE * self.scale_y) #scales the menu's font
+        scaled_font = int(MENU_FONT_SIZE * self.scale_y) # scales the menu's font
         menu_text_font = pygame.font.SysFont("Sans New Roman", max(12, scaled_font)) 
         text_font = pygame.font.SysFont("Sans New Roman", max(12, scaled_font)) 
         # done through an if and else statement 
