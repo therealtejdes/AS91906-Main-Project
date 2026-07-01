@@ -1,28 +1,29 @@
+"""Mysprite."""
 from os.path import exists
 import pygame
 from imagelist import ImageList
 import time
 
+ARENA_SCREEN_WIDTH = 800
+ARENA_SCREEN_HEIGHT = 600
 
 class MySprite():
+    """init function for mysprite."""
+
     def __init__(self, x, y, w, h, images, screen):
-        white = (188, 227, 199) #This is a tuple (Snake Variable)
-        gold = (255, 215, 0) #(Token variable)
-        black = (37, 37, 37) #(For the score alongside other inputs)
-        red = (255, 0, 0) #(For the screen when the game is over)
-
-
+        """init function for mysprite."""
+        white = (188, 227, 199)  # This is a tuple (Snake Variable)
+        black = (37, 37, 37)  # (For the score alongside other inputs)
+        red = (255, 0, 0)  # (For the screen when the game is over)
         valid = True
-        self._x = x #Classifies x as only x
-        self._y = y #Classifies Y as only Y
-        self._w = w #Classifies w as only w
-        self._h = h #Classifies h as only h
+        self._x = x  # Classifies x as only x
+        self._y = y  # Classifies Y as only Y
+        self._w = w  # Classifies w as only w
+        self._h = h  # Classifies h as only h
         self._xd=0
         self._yd=0
-
         self._images = images
         self._screen = screen
-
         self._current_frame = 0
         self._start_frame = 0
         self._end_frame =  0
@@ -32,37 +33,42 @@ class MySprite():
         self._next_move = time.time() + self._delay
         self._move_delay = 0
 
-
     def get_x(self):
+        """get x."""
         return self._x
 
     def set_x(self, x):
-        if x>=0 and x<= SCREEN_WIDTH:
+        """get x."""
+        if x>=0 and x<= ARENA_SCREEN_WIDTH:
             self._x = x
         elif x<0:
             self._x = 0
         else:
-            self._x = SCREEN_WIDTH - 1
+            self._x = ARENA_SCREEN_WIDTH - 1
 
     def get_y(self):
+        """get y."""
         return self._y
 
     def set_y(self, y):
-        if y>=0 and y<= SCREEN_HEIGHT:
+        """get y."""
+        if y>=0 and y<= ARENA_SCREEN_HEIGHT:
             self._y = y
         elif y<0:
             self._y = 0
         else:
-            self._y = SCREEN_HEIGHT - 1
+            self._y = ARENA_SCREEN_HEIGHT - 1
         
     x = property(get_x, set_x)
     y = property(get_y, set_y)
 
     def set_pos(self, x, y):
+        """set pos."""
         self.set_x(x)
         self.set_y(y)
 
     def move(self, x_delta=None, y_delta=None, delay = None):
+        """move."""
         if not x_delta is None:
             self._xd = x_delta
         if not y_delta is None:

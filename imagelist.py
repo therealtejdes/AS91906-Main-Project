@@ -1,20 +1,26 @@
+"""Imagelist."""
 from os.path import exists
 import pygame
-BLACK = (0,0,0)
+BLACK = (0, 0, 0)
 # this classes Job is to load images
 # o that it can be used for multiple sprites
+
+
 class ImageList():
+
+
+    """Imagelist class."""
+    
     def __init__(self, filename, width, height, fallback_color=(BLACK)):
+        """Imagelist init function."""
         self._images = [] 
         count = 0        
-        
         # Attempt to load disk assets if they exist
         while filename and exists(filename + str(count) + '.png'):
             image = pygame.image.load(filename + str(count) + '.png')
             scaled = pygame.transform.smoothscale(image, [width, height])
             self._images.append(scaled)
             count += 1
-            
         if not self._images:
             # the screen will cut to black
             fallback_surface = pygame.Surface((width, height))
@@ -22,8 +28,10 @@ class ImageList():
             self._images.append(fallback_surface)
 
     def get_images(self):
+        """Draws the images with the image property."""
         return self._images
     images = property(get_images, None, None)
+
 
 # testing
 if __name__ == "__main__":
