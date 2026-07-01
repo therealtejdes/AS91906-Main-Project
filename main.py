@@ -108,11 +108,11 @@ SCORE_CALCULATOR = 5
 class Token():
     def __init__(self, screen):
         self._screen = screen
-        self._w = TILESIZE_X # scaling to the snakes tile size
+        self._w = TILESIZE_X  # scaling to the snakes tile size
         self._h = TILESIZE_Y
         
-        self._token = ImageList(TOKEN, self._w, self._h) # provides the image using the imagelist class
-        self._x = 0 # x and y values set to zero because they token is not actively moving
+        self._token = ImageList(TOKEN, self._w, self._h)  # provides the image using the imagelist class
+        self._x = 0  # x and y values set to zero because they token is not actively moving
         self._y = 0 
         self._token_sprite = None
         self.random_spawn() 
@@ -139,6 +139,7 @@ class Token():
 
 # snake class 
 class Snake():
+    """this is the snake class."""
     # internal values for the snakes movements and directions
     HEAD = 0
     TAIL = -1
@@ -146,34 +147,38 @@ class Snake():
     RIGHT = 1
     DOWN = 2
     LEFT = 3
-    SNAKE_VECTOR = [(0,-1), (1,0), (0,1), (-1,0)] 
+    SNAKE_VECTOR = [(0 , -1) , (1 , 0) , (0 , 1) , (-1 , 0)] 
     # init function for the snakes variables. 
-    def __init__ (self, screen, x, y, direction = UP):
+    def __init__ (self, screen, x, y, direction=UP):
+
+        """Init funtion for snake class."""
         self._x = x
         self._y = y
         self._direction = direction
-        self._screen = screen # snake is to be drwan on the screen. 
+        self._screen = screen  # snake is to be drwan on the screen. 
         self._length = 2
-        self._move_speed = 0.10 # the inital speed at which the snake will move. 
+        self._move_speed = 0.10  # the inital speed at which the snake will move. 
         self._seg_list = []
-        self._head_image = ImageList(SNAKE_HEAD, TILESIZE_X, TILESIZE_Y) #will scale the image of the snakes head. 
+        self._head_image = ImageList(SNAKE_HEAD, TILESIZE_X, TILESIZE_Y)  # will scale the image of the snakes head. 
         self._tail_image = ImageList(SNAKE_TAIL, TILESIZE_X, TILESIZE_Y)
         self._next_move = time.time() + self._move_speed 
         self.reset()
 
     # this is the definiton that will assemble the snakes body
     def reset(self):
-        self._seg_list = [] #snakes body is an open list
-        for i in range (self._length): # snakes length is repeating
+        """Reset function for snake class."""
+        self._seg_list = []  # snakes body is an open list
+        for i in range(self._length):  # snakes length is repeating
             component_x = self._x - (i * Snake.SNAKE_VECTOR[self._direction][0] * TILESIZE_X) 
             component_y = self._y - (i * Snake.SNAKE_VECTOR[self._direction][1] * TILESIZE_Y) 
-            img_show = self._head_image if i == 0 else self._tail_image # draws the snakes tail
+            img_show = self._head_image if i == 0 else self._tail_image  # draws the snakes tail
             # draws the snake as a mysprite object
             sprite_show = MySprite(component_x, component_y, TILESIZE_X, TILESIZE_Y, img_show, self._screen) 
             self._seg_list.append(sprite_show) 
 
     # definition for the snakes direcitons. 
     def direction(self, changing_dir):
+        """Direction function for snake class."""
         # condensed into a dictionary.
         movements = {
             Snake.UP: Snake.DOWN, 
@@ -188,6 +193,7 @@ class Snake():
 
     # defintion for the snakes movements to the next step 
     def update_position(self):
+        """Update function for snake class."""
         if time.time() > self._next_move:
             # pygames time module + the initial move speed (0.10)
             self._next_move = time.time() + self._move_speed
@@ -209,9 +215,9 @@ class Snake():
             if len(self._seg_list) > self._length:
                 # the list is being taken out itself. 
                 self._seg_list.pop()
-    
     # defintion for the snakes wall collision
     def wall_and_self_collision(self): 
+        """Collision function for snake class."""
         if not self._seg_list:
             return False
         snake_head = self._seg_list[0]
@@ -224,16 +230,19 @@ class Snake():
         for component in self._seg_list[1:]:
             if snake_head.x == component.x and \
                 snake_head.y == component.y:
+                
                 return True
         return False
 
     # definition for the snakes growth and speed 
     def grow_snake_and_speed(self): 
+        """Velocity and growth function for snake class."""
         self._length += 1
-        if self._move_speed > 0.06: # max speed floor cap
-            self._move_speed -= 0.01 # rate at which the snakes velocity increases 
+        if self._move_speed > 0.06:  # max speed floor cap
+            self._move_speed -= 0.01  # rate at which the snakes velocity increases 
     # draws the snake on screen
     def draw(self):
+        """Draw function for snake class."""
         for component in self._seg_list:
             component.draw()
 
@@ -279,7 +288,7 @@ class Menu():
         self.back_button.action = lambda: self.set_state("menu")
 
 
-    #
+    # defintion for changing the state 
     def set_state(self, new_state):
         self.state = new_state
         if new_state == "start":
@@ -293,7 +302,7 @@ class Menu():
             for button in self.buttons:
                 button.mouse_click(event)
         else: 
-            self.back_button.mouse_click(event) # so that the user can use the back button to go to main
+            self.back_button.mouse_click(event)  # so that the user can use the back button to go to main
 
     # definition for the mouse detections 
     def update(self): 
@@ -315,8 +324,8 @@ class Menu():
 
     # definition to draw the buttons
     def draw(self, surface):
-        surface.fill(BLACK) # backgorund color
-        scaled_font = int(MENU_FONT_SIZE * self.scale_y) # scales the menu's font
+        surface.fill(BLACK)  # backgorund color
+        scaled_font = int(MENU_FONT_SIZE * self.scale_y)  # scales the menu's font
         menu_text_font = pygame.font.SysFont("Sans New Roman", max(12, scaled_font)) 
         text_font = pygame.font.SysFont("Sans New Roman", max(12, scaled_font)) 
         # done through an if and else statement 
@@ -328,8 +337,8 @@ class Menu():
                 button.draw(surface) 
                 
         elif self.state == "start":
-            screen.blit(CHECKERBOARD, (0,0)) # checkerboard is drawn as a background image
-            self.back_button.draw(surface) # back button is drawn on the game screen
+            screen.blit(CHECKERBOARD, (0,0))  # checkerboard is drawn as a background image
+            self.back_button.draw(surface)  # back button is drawn on the game screen
 
         # if the instructions button is pressed
         elif self.state == "instructions":
@@ -356,14 +365,14 @@ class Menu():
 # definiton for my "Game Over" message
 def message(msg, text_colour):
     text = MESSAGE_FONT.render(msg, True, text_colour)
-    text_box = text.get_rect(center=(ARENA_SCREEN_WIDTH//2, SCALED_HEIGHT//2)) # so that the part is scaled
-    screen.blit(text, text_box) # draws the box
+    text_box = text.get_rect(center=(ARENA_SCREEN_WIDTH//2, SCALED_HEIGHT//2))  # so that the part is scaled
+    screen.blit(text, text_box)  # draws the box
 
 # defintion for the "current score message"
 def score_calculator(msg, text_colour, back_ground_colour):
     text = MESSAGE_FONT.render(msg, True, text_colour, back_ground_colour)
-    text_box = text.get_rect(center=(ARENA_SCREEN_WIDTH // 6, 30)) # Center top of gameplay area
-    screen.blit(text, text_box) # draws the box
+    text_box = text.get_rect(center=(ARENA_SCREEN_WIDTH // 6, 30))  # Center top of gameplay area
+    screen.blit(text, text_box)  # draws the box
 
 # classes instanziation
 main_menu = Menu()
@@ -384,13 +393,13 @@ while game_run:
         if main_menu.state == "start" and Snake_sprite is not None: 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    Snake_sprite.direction(Snake.UP) # definiion is called back to move the snake up
+                    Snake_sprite.direction(Snake.UP)  # definiion is called back to move the snake up
                 elif event.key == pygame.K_DOWN:
-                    Snake_sprite.direction(Snake.DOWN) # definition is called back to move the snake down
+                    Snake_sprite.direction(Snake.DOWN)  # definition is called back to move the snake down
                 elif event.key == pygame.K_RIGHT:
-                    Snake_sprite.direction(Snake.RIGHT) # definition is called back to move snake right
+                    Snake_sprite.direction(Snake.RIGHT)  # definition is called back to move snake right
                 elif event.key == pygame.K_LEFT:
-                    Snake_sprite.direction(Snake.LEFT)# definitoin is called back to move snake left 
+                    Snake_sprite.direction(Snake.LEFT)  # definitoin is called back to move snake left 
 
         main_menu.event(event)
 
