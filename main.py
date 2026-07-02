@@ -45,7 +45,7 @@ ARENA_SCREEN_HEIGHT = 600
 SNAKE_HEAD = "images\\SNAKE_HEAD"
 SNAKE_TAIL = "images\\SNAKE_TAIL"
 TOKEN = "images\\TOKEN"
-MENU_SNAKE = "images\\MENU_SNAKE"
+MENU_SNAKE = "MENU_SNAKE.png"
 
 screen = pygame.display.set_mode((ARENA_SCREEN_WIDTH, ARENA_SCREEN_HEIGHT),
                                 pygame.RESIZABLE) 
@@ -332,6 +332,7 @@ class Menu():
         if self.state == "menu":
             game_title = menu_text_font.render("SNAKED", True, NAVY_BLUE)
             surface.blit(game_title, (ARENA_SCREEN_WIDTH // 2 - game_title.get_width() // 2, int(DRAWN_MENU_SCALE_INTEGER * self.scale_y)))
+       
 
             for button in self.buttons:
                 button.draw(surface) 
